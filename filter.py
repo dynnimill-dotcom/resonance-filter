@@ -28,14 +28,13 @@ st.markdown("""
 st.markdown('<h1 class="main-title">🏡 Резонансный фильтр</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">Автоматический отбор самых опасных жалоб по дворовой территории</p>', unsafe_allow_html=True)
 
-# ==================== ВКЛАДКИ ====================
 tab1, tab2, tab3 = st.tabs([
     "📋 Резонансные жалобы",
     "🔥 Индекс социального напряжения",
     "🎯 Очаги напряжения"
 ])
 
-# ==================== СЛОВАРИ ОПАСНОСТЕЙ ====================
+# ==================== СЛОВАРИ ====================
 SEASON_KEYWORDS = {
     "❄️ Зима": [
         "снег", "снегопад", "сугроб", "сугробы", "не чищено", "не убран", "не почищен",
@@ -123,7 +122,6 @@ FORBIDDEN_LOCATIONS = [
     "проезжая часть", "трасса", "шоссе", "магистраль", "автомагистраль"
 ]
 
-# ==================== СЛОВАРИ ИНДЕКСА НАПРЯЖЕНИЯ ====================
 TENSION_CATEGORIES = {
     "Повторяемость": {"max": 30, "words": [
         "уже неделю", "уже месяц", "уже год", "уже полгода", "уже 2 месяца", "уже 3 месяца",
@@ -219,11 +217,9 @@ def clean_location(location):
     return cleaned
 
 def normalize_address(addr):
-    """Нормализует адрес для группировки"""
     if not isinstance(addr, str):
         return ""
     addr = addr.lower().strip()
-    # Убираем лишние сокращения
     addr = re.sub(r'\bг\.\s*', '', addr)
     addr = re.sub(r'\bул\.\s*', 'улица ', addr)
     addr = re.sub(r'\bд\.\s*', 'дом ', addr)
@@ -280,22 +276,41 @@ def format_tension_badge(score):
         return f'🟢 НИЗКИЙ'
     return ""
 
-# ==================== ФУНКЦИИ ЗАГРУЗКИ ====================
+# ==================== ЧТЕНИЕ ФАЙЛОВ (Excel + CSV) ====================
+def read_file(file):
+    """Универсальное чтение Excel и CSV с автоопределением кодировки"""
+    file.seek(0)
+    filename = file.name.lower()
+
+    if filename.endswith(".csv"):
+        encodings = ["utf-8", "utf-8-sig", "cp1251", "windows-1251", "latin1"]
+        for enc in encodings:
+            try:
+                file.seek(0)
+                return pd.read_csv(file, encoding=enc, sep=None, engine="python")
+            except (UnicodeDecodeError, pd.errors.ParserError):
+                continue
+        file.seek(0)
+        return pd.read_csv(file, encoding="cp1251", sep=";")
+    else:
+        return pd.read_excel(file)
+
+
 def load_dobrodel(file):
-    df = pd.read_excel(file)
+    df = read_file(file)
     needed = ["Номер в источнике", "ОМСУ", "Описание", "Адрес", "Факт"]
     existing = [col for col in needed if col in df.columns]
     return df[existing].copy()
 
+
 def load_incident(file):
-    df = pd.read_excel(file)
+    df = read_file(file)
     needed = ["Номер инцидента", "Локация", "URL поста", "Контент", "Тема",
               "Адрес 1", "Адрес 2", "Адрес 3", "Адрес 4", "Адрес 5"]
     existing = [col for col in needed if col in df.columns]
     return df[existing].copy()
 
 def get_address_dobrodel(row):
-    """Извлекает адрес из строки Добродела"""
     for col in ["Адрес", "ОМСУ"]:
         val = row.get(col, "")
         if pd.notna(val) and str(val).strip():
@@ -303,7 +318,6 @@ def get_address_dobrodel(row):
     return ""
 
 def get_address_incident(row):
-    """Извлекает адрес из строки Инцидента (Адрес 1..5)"""
     parts = []
     for col in ["Адрес 1", "Адрес 2", "Адрес 3", "Адрес 4", "Адрес 5"]:
         val = row.get(col, "")
@@ -312,20 +326,18 @@ def get_address_incident(row):
     return ", ".join(parts) if parts else ""
 
 def get_fact_dobrodel(row):
-    """Извлекает факт из строки Добродела"""
     val = row.get("Факт", "")
     if pd.notna(val) and str(val).strip():
         return str(val).strip()
     return ""
 
 def get_theme_incident(row):
-    """Извлекает тему из строки Инцидента"""
     val = row.get("Тема", "")
     if pd.notna(val) and str(val).strip():
         return str(val).strip()
     return ""
 
-# ==================== ВКЛАДКА 1: РЕЗОНАНСНЫЕ ЖАЛОБЫ ====================
+# ==================== ВКЛАДКА 1 ====================
 with tab1:
     st.markdown("### 🗓️ Выберите сезон")
     season = st.radio(
@@ -336,30 +348,19 @@ with tab1:
         key="season_selector"
     )
 
-    # ==================== НАСТРОЙКИ ОТБОРА ====================
-    st.markdown("### ⚙️ Настройки отбора")
-    col_set1, col_set2 = st.columns(2)
-    with col_set1:
-        limit1 = st.selectbox(
-            "📊 Сколько жалоб показать?",
-            [50, 100, 150, 200, 500, "Все"],
-            index=2,
-            key="limit_resonance"
-        )
-    with col_set2:
-        min_score1 = st.slider(
-            "🎯 Минимальный порог баллов:",
-            min_value=5, max_value=50, value=15, step=5,
-            key="min_score_resonance"
-        )
+    min_score1 = st.slider(
+        "🎯 Минимальный порог баллов:",
+        min_value=5, max_value=50, value=15, step=5,
+        key="min_score_resonance"
+    )
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Загрузите выгрузку из Добродела</p></div>', unsafe_allow_html=True)
-        file1 = st.file_uploader("", type=["xlsx", "xls"], label_visibility="collapsed", key="uploader_dobrodel")
+        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Загрузите выгрузку из ЕДС</p></div>', unsafe_allow_html=True)
-        file2 = st.file_uploader("", type=["xlsx", "xls"], label_visibility="collapsed", key="uploader_incident")
+        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_incident")
 
     analyze_clicked = st.button("🔍 Найти резонансные жалобы", type="primary", use_container_width=True, key="btn_resonance")
 
@@ -370,45 +371,20 @@ with tab1:
             with st.spinner(f"🔄 Анализируем жалобы для сезона {season}..."):
                 try:
                     keywords = SEASON_KEYWORDS[season]
-
                     df1 = load_dobrodel(file1)
                     df2 = load_incident(file2)
 
                     df1["Баллы"] = df1["Описание"].fillna("").apply(lambda x: calculate_score(x, keywords))
                     df2["Баллы"] = df2["Контент"].fillna("").apply(lambda x: calculate_score(x, keywords))
 
-                    result1 = df1[df1["Баллы"] >= min_score1].copy()
-                    result2 = df2[df2["Баллы"] >= min_score1].copy()
-
-                    result1 = result1.drop_duplicates()
-                    result2 = result2.drop_duplicates()
-
-                    result1 = result1.sort_values("Баллы", ascending=False)
-                    result2 = result2.sort_values("Баллы", ascending=False)
-
-                    # Применяем лимит
-                    if limit1 != "Все":
-                        half = limit1 // 2
-                        result1 = result1.head(half)
-                        result2 = result2.head(limit1 - half)
+                    result1 = df1[df1["Баллы"] >= min_score1].drop_duplicates().sort_values("Баллы", ascending=False)
+                    result2 = df2[df2["Баллы"] >= min_score1].drop_duplicates().sort_values("Баллы", ascending=False)
 
                     жалобы = []
                     for _, row in result1.iterrows():
-                        номер = row.get("Номер в источнике", "")
-                        омсу = row.get("ОМСУ", "")
-                        описание = row.get("Описание", "")
-                        баллы = row.get("Баллы", 0)
-                        уровень = format_score(баллы)
-                        жалобы.append(f"{баллы} баллов {уровень} | {номер} - {омсу} - {описание}")
-
+                        жалобы.append(f"{row.get('Баллы', 0)} баллов {format_score(row.get('Баллы', 0))} | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
                     for _, row in result2.iterrows():
-                        номер = row.get("Номер инцидента", "")
-                        локация = clean_location(row.get("Локация", ""))
-                        контент = row.get("Контент", "")
-                        url = row.get("URL поста", "")
-                        баллы = row.get("Баллы", 0)
-                        уровень = format_score(баллы)
-                        жалобы.append(f"{баллы} баллов {уровень} | {номер} - {локация} - {контент} - {url}")
+                        жалобы.append(f"{row.get('Баллы', 0)} баллов {format_score(row.get('Баллы', 0))} | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
 
                     def extract_score(text):
                         match = re.search(r'^(\d+)', text)
@@ -418,15 +394,13 @@ with tab1:
                     text_output = "\n\n".join(жалобы)
 
                     st.markdown('<div class="result-box">', unsafe_allow_html=True)
-                    total_found = len(df1[df1["Баллы"] >= min_score1]) + len(df2[df2["Баллы"] >= min_score1])
                     if not text_output:
                         st.warning(f"⚠️ Резонансных жалоб для сезона «{season}» не найдено.")
                     else:
-                        shown = len(жалобы)
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
                             <span style="font-size: 2rem;">{season.split()[0]}</span>
-                            <h3 style="margin: 0; color: #2d3436;">Показано <span style="color: #0984e3;">{shown}</span> из <span style="color: #636e72;">{total_found}</span> резонансных ({season})</h3>
+                            <h3 style="margin: 0; color: #2d3436;">Найдено <span style="color: #0984e3;">{len(жалобы)}</span> резонансных ({season})</h3>
                             <span style="margin-left: auto; background: #dfe6e9; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: #636e72;">порог: {min_score1} баллов</span>
                         </div>
                         """, unsafe_allow_html=True)
@@ -439,7 +413,7 @@ with tab1:
                     import traceback
                     st.text(traceback.format_exc())
 
-# ==================== ВКЛАДКА 2: ИНДЕКС НАПРЯЖЕНИЯ ====================
+# ==================== ВКЛАДКА 2 ====================
 with tab2:
     st.markdown("### 🔥 Индекс социального напряжения")
     st.markdown("""
@@ -452,28 +426,19 @@ with tab2:
     </div>
     """, unsafe_allow_html=True)
 
-    col_set1, col_set2 = st.columns(2)
-    with col_set1:
-        limit2 = st.selectbox(
-            "📊 Сколько жалоб показать?",
-            [50, 100, 150, 200, 500, "Все"],
-            index=2,
-            key="limit_tension"
-        )
-    with col_set2:
-        min_score2 = st.slider(
-            "🎯 Минимальный порог баллов:",
-            min_value=15, max_value=100, value=30, step=5,
-            key="min_score_tension"
-        )
+    min_score2 = st.slider(
+        "🎯 Минимальный порог баллов:",
+        min_value=15, max_value=100, value=30, step=5,
+        key="min_score_tension"
+    )
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Загрузите выгрузку из Добродела</p></div>', unsafe_allow_html=True)
-        tension_file1 = st.file_uploader("", type=["xlsx", "xls"], label_visibility="collapsed", key="tension_dobrodel")
+        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        tension_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Загрузите выгрузку из ЕДС</p></div>', unsafe_allow_html=True)
-        tension_file2 = st.file_uploader("", type=["xlsx", "xls"], label_visibility="collapsed", key="tension_incident")
+        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        tension_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_incident")
 
     tension_clicked = st.button("🔥 Рассчитать индекс напряжения", type="primary", use_container_width=True, key="btn_tension")
 
@@ -481,7 +446,7 @@ with tab2:
         if not tension_file1 or not tension_file2:
             st.error("⚠️ Загрузите оба файла!")
         else:
-            with st.spinner("🔄 Рассчитываем индекс социального напряжения..."):
+            with st.spinner("🔄 Рассчитываем индекс..."):
                 try:
                     df1 = load_dobrodel(tension_file1)
                     df2 = load_incident(tension_file2)
@@ -489,37 +454,14 @@ with tab2:
                     df1["Индекс"] = df1["Описание"].fillna("").apply(calculate_tension)
                     df2["Индекс"] = df2["Контент"].fillna("").apply(calculate_tension)
 
-                    result1 = df1[df1["Индекс"] >= min_score2].copy()
-                    result2 = df2[df2["Индекс"] >= min_score2].copy()
-
-                    result1 = result1.drop_duplicates()
-                    result2 = result2.drop_duplicates()
-
-                    result1 = result1.sort_values("Индекс", ascending=False)
-                    result2 = result2.sort_values("Индекс", ascending=False)
-
-                    if limit2 != "Все":
-                        half = limit2 // 2
-                        result1 = result1.head(half)
-                        result2 = result2.head(limit2 - half)
+                    result1 = df1[df1["Индекс"] >= min_score2].drop_duplicates().sort_values("Индекс", ascending=False)
+                    result2 = df2[df2["Индекс"] >= min_score2].drop_duplicates().sort_values("Индекс", ascending=False)
 
                     жалобы = []
                     for _, row in result1.iterrows():
-                        номер = row.get("Номер в источнике", "")
-                        омсу = row.get("ОМСУ", "")
-                        описание = row.get("Описание", "")
-                        индекс = row.get("Индекс", 0)
-                        уровень = format_tension_badge(индекс)
-                        жалобы.append(f"{индекс} баллов {уровень} | {номер} - {омсу} - {описание}")
-
+                        жалобы.append(f"{row.get('Индекс', 0)} баллов {format_tension_badge(row.get('Индекс', 0))} | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
                     for _, row in result2.iterrows():
-                        номер = row.get("Номер инцидента", "")
-                        локация = clean_location(row.get("Локация", ""))
-                        контент = row.get("Контент", "")
-                        url = row.get("URL поста", "")
-                        индекс = row.get("Индекс", 0)
-                        уровень = format_tension_badge(индекс)
-                        жалобы.append(f"{индекс} баллов {уровень} | {номер} - {локация} - {контент} - {url}")
+                        жалобы.append(f"{row.get('Индекс', 0)} баллов {format_tension_badge(row.get('Индекс', 0))} | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
 
                     def extract_score(text):
                         match = re.search(r'^(\d+)', text)
@@ -548,7 +490,7 @@ with tab2:
                     import traceback
                     st.text(traceback.format_exc())
 
-# ==================== ВКЛАДКА 3: ОЧАГИ НАПРЯЖЕНИЯ ====================
+# ==================== ВКЛАДКА 3 ====================
 with tab3:
     st.markdown("### 🎯 Очаги напряжения")
     st.markdown("""
@@ -563,11 +505,11 @@ with tab3:
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Загрузите выгрузку из Добродела</p></div>', unsafe_allow_html=True)
-        hotspot_file1 = st.file_uploader("", type=["xlsx", "xls"], label_visibility="collapsed", key="hotspot_dobrodel")
+        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        hotspot_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Загрузите выгрузку из ЕДС</p></div>', unsafe_allow_html=True)
-        hotspot_file2 = st.file_uploader("", type=["xlsx", "xls"], label_visibility="collapsed", key="hotspot_incident")
+        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        hotspot_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_incident")
 
     hotspot_clicked = st.button("🎯 Найти очаги напряжения", type="primary", use_container_width=True, key="btn_hotspot")
 
@@ -575,83 +517,58 @@ with tab3:
         if not hotspot_file1 or not hotspot_file2:
             st.error("⚠️ Загрузите оба файла!")
         else:
-            with st.spinner("🔄 Ищем очаги напряжения..."):
+            with st.spinner("🔄 Ищем очаги..."):
                 try:
                     df1 = load_dobrodel(hotspot_file1)
                     df2 = load_incident(hotspot_file2)
 
-                    # Собираем все жалобы в один список
                     hotspots = defaultdict(lambda: {
-                        "omсу": "",
-                        "address": "",
-                        "fact": "",
-                        "count": 0,
-                        "best_description": "",
-                        "best_score": -1,
-                        "source": ""
+                        "omсу": "", "address": "", "fact": "",
+                        "count": 0, "best_description": "", "best_score": -1, "source": ""
                     })
 
-                    # Обработка Добродела
                     for _, row in df1.iterrows():
                         address = get_address_dobrodel(row)
                         fact = get_fact_dobrodel(row)
                         if not address:
                             continue
-
-                        norm_addr = normalize_address(address)
-                        key = (norm_addr, fact.lower() if fact else "")
-
-                        omсу = row.get("ОМСУ", "")
+                        key = (normalize_address(address), fact.lower() if fact else "")
                         описание = str(row.get("Описание", "")) if pd.notna(row.get("Описание")) else ""
                         score = calculate_tension(описание)
-
-                        hotspots[key]["omсу"] = omсу
+                        hotspots[key]["omсу"] = row.get("ОМСУ", "")
                         hotspots[key]["address"] = address
                         hotspots[key]["fact"] = fact
                         hotspots[key]["count"] += 1
                         hotspots[key]["source"] = "Добродел"
-
                         if score > hotspots[key]["best_score"]:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = описание
 
-                    # Обработка Инцидента
                     for _, row in df2.iterrows():
                         address = get_address_incident(row)
                         theme = get_theme_incident(row)
                         if not address:
                             continue
-
-                        norm_addr = normalize_address(address)
-                        key = (norm_addr, theme.lower() if theme else "")
-
-                        локация = row.get("Локация", "")
+                        key = (normalize_address(address), theme.lower() if theme else "")
                         контент = str(row.get("Контент", "")) if pd.notna(row.get("Контент")) else ""
                         score = calculate_tension(контент)
-
-                        hotspots[key]["omсу"] = локация
+                        hotspots[key]["omсу"] = row.get("Локация", "")
                         hotspots[key]["address"] = address
                         hotspots[key]["fact"] = theme
                         hotspots[key]["count"] += 1
                         hotspots[key]["source"] = "Инцидент"
-
                         if score > hotspots[key]["best_score"]:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = контент
 
-                    # Фильтруем очаги (≥ 2 жалоб)
                     filtered = {k: v for k, v in hotspots.items() if v["count"] >= 2}
-
-                    # Сортируем по количеству жалоб
                     sorted_hotspots = sorted(filtered.items(), key=lambda x: x[1]["count"], reverse=True)
 
                     text_output = ""
                     if not sorted_hotspots:
                         st.warning("⚠️ Очагов напряжения не найдено.")
                     else:
-                        text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n"
-                        text_output += "=" * 70 + "\n\n"
-
+                        text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n" + "=" * 70 + "\n\n"
                         for i, (key, data) in enumerate(sorted_hotspots, 1):
                             text_output += f"{i}. {data['omсу']} - {data['count']} жалоб - {data['address']}\n"
                             if data['fact']:
