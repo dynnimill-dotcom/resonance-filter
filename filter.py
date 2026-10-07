@@ -35,7 +35,7 @@ tab1, tab2, tab3 = st.tabs([
     "🎯 Очаги напряжения"
 ])
 
-# ==================== СЛОВАРИ ====================
+# ==================== СЛОВАРИ СЕЗОНОВ ====================
 SEASON_KEYWORDS = {
     "❄️ Зима": [
         "снег", "снегопад", "сугроб", "сугробы", "не чищено", "не убран", "не почищен",
@@ -208,6 +208,34 @@ TENSION_CATEGORIES = {
     ]}
 }
 
+# ==================== КАТЕГОРИЗАЦИЯ ТЕМ ====================
+THEME_CATEGORIES = {
+    "Детские площадки": ["площадк", "горк", "качел", "карусел", "турник", "игров", "детск"],
+    "Аварийные деревья": ["дерев", "ветк", "сухост", "крон", "ствол", "пень"],
+    "Ямы и дороги": ["яма", "выбоин", "провал", "бордюр", "асфальт", "дворов", "проезд"],
+    "Мусор и листва": ["мусор", "листв", "свалк", "отход", "уборк"],
+    "Снег и гололёд": ["снег", "сугроб", "голол", "налед", "лед", "сосул"],
+    "Подтопления": ["подтоплен", "затоплен", "заливает", "лужа", "вода", "прорвало"],
+    "Угроза жизни и здоровью": ["опасн", "угроз", "травм", "упал", "пострадал", "кровь", "скорая"],
+    "Бездействие властей": ["бездейств", "игнорир", "не реагир", "отписк", "не отвеча"],
+    "Прокуратура и СМИ": ["прокурат", "суд", "сми", "журналист", "огласк"],
+    "Крыши и подъезды": ["крыш", "кровл", "козырек", "входн", "подъезд"],
+    "Скамейки и урны": ["скамь", "лавк", "урн"],
+    "Освещение": ["освещ", "фонар", "свет", "темн"],
+    "Парковка": ["парков", "машин", "авто"],
+    "Животные": ["собак", "кошк", "крыс", "животн"],
+}
+
+def categorize_theme(text):
+    if not isinstance(text, str):
+        return "Прочее"
+    t = text.lower()
+    for theme, keywords in THEME_CATEGORIES.items():
+        for kw in keywords:
+            if kw in t:
+                return theme
+    return "Прочее"
+
 # ==================== ФУНКЦИИ ====================
 def clean_location(location):
     if not isinstance(location, str):
@@ -303,7 +331,7 @@ def load_dobrodel(file):
 def load_incident(file):
     df = read_file(file)
     needed = ["Номер инцидента", "Локация", "URL поста", "Контент", "Тема",
-              "Адрес 1", "Адрес 2", "Адрес 3", "Адрес 4", "Адрес 5"]
+              "Адрес 1", "Адрес 2", "Адрес 3", "Адрес 4", "Адрес 5", "Группа тем I"]
     existing = [col for col in needed if col in df.columns]
     return df[existing].copy()
 
@@ -329,7 +357,7 @@ def get_fact_dobrodel(row):
     return ""
 
 def get_theme_incident(row):
-    val = row.get("Тема", "")
+    val = row.get("Группа тем I", "")
     if pd.notna(val) and str(val).strip():
         return str(val).strip()
     return ""
@@ -482,12 +510,28 @@ with tab3:
     st.markdown("""
     <div style="background: white; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
         <p style="color: #636e72; margin: 0;">
-        Эта вкладка находит <b>горячие точки</b> — адреса, откуда идёт массовый поток жалоб. 
-        Очаг формируется по адресу. Добродел и Инцидент объединяются в один кластер. 
-        Показываются все адреса, где <b>2 и более жалоб</b>.
+        Эта вкладка находит <b>критические очаги</b> — адреса, где зафиксировано много жалоб 
+        по разным темам. Очаг формируется по адресу, Добродел и Инцидент объединяются.
+        </p>
+        <p style="color: #e74c3c; margin: 0.5rem 0 0 0;">
+        <b>Индекс критичности</b> = (кол-во жалоб × 1) + (средний индекс напряжения × 2) + (разнообразие тем × 5)
         </p>
     </div>
     """, unsafe_allow_html=True)
+
+    col_set1, col_set2 = st.columns(2)
+    with col_set1:
+        min_complaints = st.slider(
+            "📊 Минимум жалоб на адрес:",
+            min_value=3, max_value=50, value=10, step=1,
+            key="min_complaints_hotspot"
+        )
+    with col_set2:
+        min_index = st.slider(
+            "🎯 Минимальный индекс критичности:",
+            min_value=0, max_value=300, value=80, step=10,
+            key="min_index_hotspot"
+        )
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
@@ -512,13 +556,16 @@ with tab3:
                         "omсу": "",
                         "address": "",
                         "count": 0,
+                        "total_tension": 0,
                         "best_description": "",
                         "best_score": -1,
                         "dobrodel_count": 0,
                         "incident_count": 0,
                         "dobrodel_numbers": [],
                         "incident_numbers": [],
-                        "emails": defaultdict(int)
+                        "emails": defaultdict(int),
+                        "themes": defaultdict(int),
+                        "tension_categories": set()
                     })
 
                     # ==================== ОБРАБОТКА ДОБРОДЕЛА ====================
@@ -531,6 +578,7 @@ with tab3:
                         key = norm_addr
 
                         описание = str(row.get("Описание", "")) if pd.notna(row.get("Описание")) else ""
+                        факт = str(row.get("Факт", "")) if pd.notna(row.get("Факт")) else ""
                         score = calculate_tension(описание)
                         номер = str(row.get("Номер в источнике", "")).strip()
                         почта = str(row.get("Почта заявителя", "")).strip() if pd.notna(row.get("Почта заявителя")) else ""
@@ -538,12 +586,25 @@ with tab3:
                         hotspots[key]["omсу"] = row.get("ОМСУ", "")
                         hotspots[key]["address"] = address
                         hotspots[key]["count"] += 1
+                        hotspots[key]["total_tension"] += score
                         hotspots[key]["dobrodel_count"] += 1
                         if номер:
                             hotspots[key]["dobrodel_numbers"].append(номер)
 
                         if почта and почта.lower() not in ["nan", "none", ""]:
                             hotspots[key]["emails"][почта] += 1
+
+                        # Тематика: сначала пробуем Факт из Добродела
+                        theme = categorize_theme(факт) if факт else categorize_theme(описание)
+                        hotspots[key]["themes"][theme] += 1
+
+                        # Категория напряжения
+                        if score > 0:
+                            for cat, data in TENSION_CATEGORIES.items():
+                                for w in data["words"]:
+                                    if w in описание.lower():
+                                        hotspots[key]["tension_categories"].add(cat)
+                                        break
 
                         if score > hotspots[key]["best_score"]:
                             hotspots[key]["best_score"] = score
@@ -559,6 +620,7 @@ with tab3:
                         key = norm_addr
 
                         контент = str(row.get("Контент", "")) if pd.notna(row.get("Контент")) else ""
+                        группа_тем = str(row.get("Группа тем I", "")) if pd.notna(row.get("Группа тем I")) else ""
                         score = calculate_tension(контент)
                         номер = str(row.get("Номер инцидента", "")).strip()
 
@@ -568,28 +630,89 @@ with tab3:
                             hotspots[key]["address"] = address
 
                         hotspots[key]["count"] += 1
+                        hotspots[key]["total_tension"] += score
                         hotspots[key]["incident_count"] += 1
                         if номер:
                             hotspots[key]["incident_numbers"].append(номер)
+
+                        # Тематика: сначала пробуем Группа тем I из Инцидента
+                        theme = categorize_theme(группа_тем) if группа_тем else categorize_theme(контент)
+                        hotspots[key]["themes"][theme] += 1
+
+                        if score > 0:
+                            for cat, data in TENSION_CATEGORIES.items():
+                                for w in data["words"]:
+                                    if w in контент.lower():
+                                        hotspots[key]["tension_categories"].add(cat)
+                                        break
 
                         if score > hotspots[key]["best_score"]:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = контент
 
-                    # ==================== ФИЛЬТР И СОРТИРОВКА ====================
-                    filtered = {k: v for k, v in hotspots.items() if v["count"] >= 2}
-                    sorted_hotspots = sorted(filtered.items(), key=lambda x: x[1]["count"], reverse=True)
+                    # ==================== РАСЧЁТ ИНДЕКСА КРИТИЧНОСТИ ====================
+                    for key, data in hotspots.items():
+                        if data["count"] == 0:
+                            data["critical_index"] = 0
+                            data["avg_tension"] = 0
+                            data["themes_count"] = 0
+                            continue
+
+                        avg_tension = data["total_tension"] / data["count"]
+                        themes_count = len(data["themes"])
+                        critical_index = data["count"] * 1 + avg_tension * 2 + themes_count * 5
+
+                        data["avg_tension"] = round(avg_tension, 1)
+                        data["themes_count"] = themes_count
+                        data["critical_index"] = round(critical_index, 1)
+
+                    # ==================== ФИЛЬТР ====================
+                    filtered = {
+                        k: v for k, v in hotspots.items()
+                        if v["count"] >= min_complaints and v["critical_index"] >= min_index
+                    }
+                    sorted_hotspots = sorted(filtered.items(), key=lambda x: x[1]["critical_index"], reverse=True)
 
                     # ==================== ФОРМИРОВАНИЕ ВЫВОДА ====================
                     text_output = ""
                     if not sorted_hotspots:
-                        st.warning("⚠️ Очагов напряжения не найдено.")
+                        st.warning("⚠️ Очагов с такими параметрами не найдено. Попробуйте снизить пороги.")
                     else:
                         text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n"
                         text_output += "=" * 70 + "\n\n"
 
                         for i, (key, data) in enumerate(sorted_hotspots, 1):
-                            text_output += f"{i}. {data['omсу']} - {data['count']} жалоб - {data['address']}\n"
+                            ci = data["critical_index"]
+                            if ci >= 200:
+                                level_icon = "🔴"
+                                level_name = "КРИТИЧЕСКИЙ ОЧАГ"
+                            elif ci >= 120:
+                                level_icon = "🟠"
+                                level_name = "ОЧЕНЬ ВЫСОКИЙ"
+                            elif ci >= 80:
+                                level_icon = "🟡"
+                                level_name = "ВЫСОКИЙ"
+                            elif ci >= 40:
+                                level_icon = "🟢"
+                                level_name = "СРЕДНИЙ"
+                            else:
+                                level_icon = "⚪"
+                                level_name = "НИЗКИЙ"
+
+                            text_output += f"{level_icon} {level_name} №{i}\n"
+                            text_output += f"   Индекс критичности: {data['critical_index']}\n"
+                            text_output += f"   Адрес: {data['address']}\n"
+                            text_output += f"   ОМСУ: {data['omсу']}\n"
+                            text_output += f"   Жалоб: {data['count']} (Добродел: {data['dobrodel_count']}, Инцидент: {data['incident_count']})\n"
+                            text_output += f"   Средний индекс напряжения: {data['avg_tension']}\n"
+                            text_output += f"   Разнообразие тем: {data['themes_count']}\n\n"
+
+                            if data["themes"]:
+                                text_output += f"   📂 Темы очага (по Факт / Группа тем I):\n"
+                                sorted_themes = sorted(data["themes"].items(), key=lambda x: x[1], reverse=True)
+                                for theme, count in sorted_themes:
+                                    text_output += f"      • {theme}: {count}\n"
+                                text_output += "\n"
 
                             all_numbers = []
                             if data["dobrodel_numbers"]:
@@ -600,24 +723,35 @@ with tab3:
                                 text_output += f"   📞 Номера жалоб: {', '.join(all_numbers)}\n"
 
                             if data["emails"]:
+                                text_output += f"   📧 Почта заявителей:\n"
                                 sorted_emails = sorted(data["emails"].items(), key=lambda x: x[1], reverse=True)
                                 for email, count in sorted_emails:
-                                    text_output += f"   📧 {email} - {count} жалоб\n"
+                                    text_output += f"      • {email} - {count} жалоб\n"
                             else:
-                                text_output += f"   📧 Почта заявителя: Не указана\n"
+                                text_output += f"   📧 Почта заявителей: Не указана\n"
 
-                            text_output += f"   📝 Самое резонансное: {data['best_description'][:300]}\n"
-                            text_output += f"   📊 Источники: Добродел ({data['dobrodel_count']}), Инцидент ({data['incident_count']})\n"
+                            text_output += f"\n   📝 Самое резонансное: {data['best_description'][:300]}\n"
                             text_output += "-" * 70 + "\n\n"
 
                         st.markdown('<div class="result-box">', unsafe_allow_html=True)
+
+                        critical = sum(1 for _, d in sorted_hotspots if d["critical_index"] >= 200)
+                        high = sum(1 for _, d in sorted_hotspots if 120 <= d["critical_index"] < 200)
+                        medium = sum(1 for _, d in sorted_hotspots if 80 <= d["critical_index"] < 120)
+
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
                             <span style="font-size: 2rem;">🎯</span>
                             <h3 style="margin: 0; color: #2d3436;">Найдено <span style="color: #e74c3c;">{len(sorted_hotspots)}</span> очагов напряжения</h3>
-                            <span style="margin-left: auto; background: #dfe6e9; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: #636e72;">🔽 от самых горячих</span>
+                            <span style="margin-left: auto; background: #dfe6e9; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: #636e72;">🔽 по индексу критичности</span>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <span style="background: #ff6b6b; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🔴 Критических: {critical}</span>
+                            <span style="background: #fdcb6e; color: #2d3436; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟠 Очень высоких: {high}</span>
+                            <span style="background: #74b9ff; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟡 Высоких: {medium}</span>
                         </div>
                         """, unsafe_allow_html=True)
+
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
                         st.download_button("📥 Скачать как .txt", data=text_output, file_name="очаги_напряжения.txt", mime="text/plain")
                         st.markdown('</div>', unsafe_allow_html=True)
