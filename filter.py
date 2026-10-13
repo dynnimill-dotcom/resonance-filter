@@ -32,42 +32,38 @@ with theme_col2:
 # ==================== CSS С ТЕМАМИ ====================
 def get_theme_variables():
     light_vars = """
-        --bg-gradient-1: #f9f5f2;
-        --bg-gradient-2: #e8eef7;
-        --card-bg: #ffffff;
-        --card-border: rgba(128, 0, 32, 0.08);
-        --card-shadow: 0 10px 40px rgba(128, 0, 32, 0.08);
-        --card-shadow-hover: 0 15px 50px rgba(128, 0, 32, 0.15);
-        --text-primary: #2b1a20;
-        --text-secondary: #6e5a63;
-        --text-muted: #a89aa0;
-        --accent-burgundy: #800020;
-        --accent-burgundy-dark: #5c0a1a;
-        --accent-blue: #2e86de;
-        --accent-blue-light: #5dade2;
-        --footer-border: #e8dfe3;
-        --input-bg: #ffffff;
-        --input-border: #e0d5da;
-        --input-text: #2b1a20;
+        --bg: #fafafa;
+        --surface: #ffffff;
+        --surface-alt: #f4f4f5;
+        --border: #e4e4e7;
+        --border-strong: #d4d4d8;
+        --text: #18181b;
+        --text-muted: #52525b;
+        --text-subtle: #a1a1aa;
+        --burgundy: #7a1f2b;
+        --burgundy-hover: #5c1420;
+        --blue: #1e5fa8;
+        --blue-hover: #164a83;
+        --danger: #b91c1c;
+        --warning: #c2410c;
+        --ok: #15803d;
     """
     dark_vars = """
-        --bg-gradient-1: #1a0e14;
-        --bg-gradient-2: #0f1419;
-        --card-bg: #1f1418;
-        --card-border: rgba(168, 50, 80, 0.15);
-        --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-        --card-shadow-hover: 0 15px 50px rgba(168, 50, 80, 0.25);
-        --text-primary: #f0e6ea;
-        --text-secondary: #c4b3bb;
-        --text-muted: #8a7a82;
-        --accent-burgundy: #c45a75;
-        --accent-burgundy-dark: #a32638;
-        --accent-blue: #5dade2;
-        --accent-blue-light: #85c1e9;
-        --footer-border: #2f1f26;
-        --input-bg: #2a1d22;
-        --input-border: #3f2a33;
-        --input-text: #f0e6ea;
+        --bg: #0f0f11;
+        --surface: #18181b;
+        --surface-alt: #1f1f23;
+        --border: #27272a;
+        --border-strong: #3f3f46;
+        --text: #fafafa;
+        --text-muted: #a1a1aa;
+        --text-subtle: #71717a;
+        --burgundy: #b8505f;
+        --burgundy-hover: #d16473;
+        --blue: #5b9bd5;
+        --blue-hover: #77aede;
+        --danger: #ef4444;
+        --warning: #f97316;
+        --ok: #22c55e;
     """
 
     if st.session_state.theme == "light":
@@ -86,192 +82,344 @@ theme_css = f"""
 <style>
 {get_theme_variables()}
 
+html, body, [class*="css"] {{
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}}
+
 .stApp {{
-    background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
-    color: var(--text-primary);
+    background: var(--bg);
+    color: var(--text);
+}}
+
+.block-container {{
+    padding-top: 2rem !important;
+    padding-bottom: 3rem !important;
+    max-width: 1200px;
 }}
 
 .main-title {{
-    text-align: center;
-    font-size: 2.8rem;
-    font-weight: 800;
-    background: linear-gradient(45deg, var(--accent-burgundy), var(--accent-blue));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    padding: 1rem 0;
-    letter-spacing: -0.5px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    margin: 0 0 0.25rem 0;
+    padding: 0;
+    text-align: left;
 }}
+
 .sub-title {{
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0 0 2rem 0;
+    padding: 0 0 0 12px;
+    font-weight: 400;
+    text-align: left;
+    border-left: 3px solid var(--burgundy);
 }}
 
 .upload-card {{
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 2rem 1.5rem;
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--card-border);
-    transition: all 0.3s ease;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    transition: border-color 0.15s ease;
     height: 100%;
 }}
 .upload-card:hover {{
-    transform: translateY(-5px);
-    box-shadow: var(--card-shadow-hover);
-    border-color: var(--accent-burgundy);
+    border-color: var(--border-strong);
 }}
 .upload-card h3 {{
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: -0.01em;
 }}
 .upload-card p {{
-    color: var(--text-muted);
-    font-size: 0.9rem;
+    color: var(--text-subtle);
+    font-size: 0.8rem;
+    margin: 0;
+    font-weight: 400;
 }}
 
 .result-box {{
-    background: var(--card-bg);
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: var(--card-shadow);
-    margin-top: 2rem;
-    border: 1px solid var(--card-border);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
 }}
-.result-box h3 {{ color: var(--text-primary); }}
+.result-box h3 {{
+    color: var(--text);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}}
 
 .badge-critical {{
-    background: linear-gradient(135deg, #a32638, #800020);
-    color: white; padding: 0.2rem 0.8rem; border-radius: 50px;
-    font-size: 0.75rem; font-weight: 700; display: inline-block;
+    background: var(--danger);
+    color: #fff;
+    padding: 0.125rem 0.625rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: inline-block;
 }}
 .badge-high {{
-    background: linear-gradient(135deg, #d4776b, #a32638);
-    color: white; padding: 0.2rem 0.8rem; border-radius: 50px;
-    font-size: 0.75rem; font-weight: 700; display: inline-block;
+    background: var(--warning);
+    color: #fff;
+    padding: 0.125rem 0.625rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: inline-block;
 }}
 .badge-medium {{
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-light));
-    color: white; padding: 0.2rem 0.8rem; border-radius: 50px;
-    font-size: 0.75rem; font-weight: 700; display: inline-block;
+    background: var(--blue);
+    color: #fff;
+    padding: 0.125rem 0.625rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: inline-block;
 }}
 .badge-low {{
-    background: linear-gradient(135deg, #85c1e9, #d5e8f5);
-    color: #1a0e14; padding: 0.2rem 0.8rem; border-radius: 50px;
-    font-size: 0.75rem; font-weight: 700; display: inline-block;
+    background: var(--ok);
+    color: #fff;
+    padding: 0.125rem 0.625rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    display: inline-block;
 }}
 
-.stMarkdown, .stText, p, span, label, div {{ color: var(--text-primary); }}
-
-.stSlider > div > div > div > div {{ background: var(--accent-burgundy) !important; }}
-.stSlider [data-baseweb="slider"] div[role="slider"] {{
-    background: var(--accent-blue) !important;
-    border-color: var(--accent-burgundy) !important;
+h1, h2, h3, h4 {{
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+}}
+p, span, label, li, div {{
+    color: var(--text);
+}}
+.stMarkdown p {{
+    color: var(--text) !important;
 }}
 
-.stSelectbox > div > div, .stMultiSelect > div > div {{
-    background: var(--input-bg) !important;
-    border-color: var(--input-border) !important;
-    color: var(--input-text) !important;
+.stTabs [data-baseweb="tab-list"] {{
+    gap: 4px;
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+    margin-bottom: 1.5rem;
+}}
+.stTabs [data-baseweb="tab"] {{
+    background: transparent;
+    border-radius: 0;
+    padding: 0.75rem 1.25rem;
+    color: var(--text-muted);
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: -1px;
+}}
+.stTabs [data-baseweb="tab"]:hover {{
+    color: var(--text);
+}}
+.stTabs [aria-selected="true"] {{
+    background: transparent !important;
+    color: var(--burgundy) !important;
+    border-bottom: 2px solid var(--burgundy) !important;
+    font-weight: 600 !important;
 }}
 
 .stButton > button {{
-    background: linear-gradient(135deg, var(--accent-burgundy), var(--accent-blue));
-    color: white; border: none; border-radius: 50px;
-    font-weight: 600; padding: 0.5rem 2rem;
-    transition: all 0.3s ease;
+    background: var(--burgundy);
+    color: #fff;
+    border: 1px solid var(--burgundy);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1.25rem;
+    transition: background 0.15s ease;
+    box-shadow: none;
 }}
 .stButton > button:hover {{
-    background: linear-gradient(135deg, var(--accent-burgundy-dark), var(--accent-blue));
-    transform: scale(1.02);
-    box-shadow: 0 5px 20px rgba(128, 0, 32, 0.3);
+    background: var(--burgundy-hover);
+    border-color: var(--burgundy-hover);
+    color: #fff;
 }}
-
+.stButton > button:focus {{
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.15) !important;
+}}
+.stButton > button[kind="primary"] {{
+    background: var(--burgundy);
+    border-color: var(--burgundy);
+    color: #fff;
+}}
+.stButton > button[kind="primary"]:hover {{
+    background: var(--burgundy-hover);
+    border-color: var(--burgundy-hover);
+}}
 .stButton > button[kind="secondary"] {{
-    padding: 0.4rem 0.6rem !important;
-    font-size: 1.2rem !important;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    padding: 0.35rem 0.5rem !important;
+    font-size: 1.1rem !important;
     min-width: unset !important;
+    border-radius: 8px;
+}}
+.stButton > button[kind="secondary"]:hover {{
+    background: var(--surface-alt);
+    border-color: var(--border-strong);
+    color: var(--text);
 }}
 
 .stDownloadButton > button {{
-    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-light));
-    color: white; border: none; border-radius: 50px; font-weight: 600;
+    background: var(--blue);
+    color: #fff;
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1.25rem;
+    box-shadow: none;
 }}
 .stDownloadButton > button:hover {{
-    background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue));
+    background: var(--blue-hover);
+    border-color: var(--blue-hover);
+    color: #fff;
 }}
 
-.stTabs [data-baseweb="tab-list"] {{ gap: 8px; background: transparent; }}
-.stTabs [data-baseweb="tab"] {{
-    background: var(--card-bg);
-    border-radius: 50px;
-    padding: 0.5rem 1.5rem;
-    color: var(--text-secondary);
-    border: 1px solid var(--card-border);
-    font-weight: 600;
+.stSlider [data-baseweb="slider"] > div > div > div {{
+    background: var(--burgundy) !important;
 }}
-.stTabs [aria-selected="true"] {{
-    background: linear-gradient(135deg, var(--accent-burgundy), var(--accent-blue)) !important;
-    color: white !important;
-    border: none !important;
+.stSlider [data-baseweb="slider"] div[role="slider"] {{
+    background: var(--burgundy) !important;
+    border: 2px solid var(--burgundy) !important;
+    box-shadow: none !important;
+}}
+.stSlider [data-testid="stTickBar"] {{
+    background: transparent !important;
+}}
+.stSlider [data-testid="stTickBarMin"],
+.stSlider [data-testid="stTickBarMax"] {{
+    color: var(--text-subtle) !important;
+}}
+
+.stSelectbox > div > div, .stMultiSelect > div > div {{
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    color: var(--text) !important;
+}}
+.stSelectbox > div > div:hover, .stMultiSelect > div > div:hover {{
+    border-color: var(--border-strong) !important;
+}}
+
+.stRadio > div {{
+    gap: 8px;
+    flex-wrap: wrap;
+}}
+.stRadio > div > label {{
+    background: var(--surface);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+}}
+.stRadio > div > label:hover {{
+    border-color: var(--border-strong);
+    color: var(--text);
+}}
+.stRadio > div > label[data-checked="true"],
+.stRadio > div > label:has(input:checked) {{
+    background: var(--burgundy);
+    border-color: var(--burgundy);
+    color: #fff;
 }}
 
 .stTextArea textarea {{
-    background: var(--input-bg) !important;
-    color: var(--input-text) !important;
-    border-radius: 15px !important;
-    border: 1px solid var(--input-border) !important;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    font-size: 0.85rem !important;
+    font-family: "SF Mono", "JetBrains Mono", "Consolas", monospace !important;
+    line-height: 1.6 !important;
+    padding: 1rem !important;
+}}
+.stTextArea textarea:focus {{
+    border-color: var(--burgundy) !important;
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.1) !important;
 }}
 
 .stFileUploader > div {{
-    background: var(--card-bg) !important;
-    border-color: var(--input-border) !important;
-    border-radius: 15px !important;
+    background: var(--surface) !important;
+    border: 1px dashed var(--border-strong) !important;
+    border-radius: 10px !important;
+    transition: border-color 0.15s ease;
 }}
-.stFileUploader label {{ color: var(--text-primary) !important; }}
-
-.stRadio > div > label {{
-    background: var(--card-bg);
-    padding: 0.5rem 1.2rem;
-    border-radius: 50px;
-    border: 1px solid var(--card-border);
-    color: var(--text-primary);
-    transition: all 0.3s ease;
+.stFileUploader > div:hover {{
+    border-color: var(--burgundy) !important;
 }}
-.stRadio > div > label:hover {{ border-color: var(--accent-burgundy); }}
-
-.streamlit-expanderHeader {{
-    background: var(--card-bg);
-    border-radius: 12px;
-    color: var(--text-primary);
+.stFileUploader label {{
+    color: var(--text) !important;
+    font-size: 0.85rem !important;
+}}
+.stFileUploader small {{
+    color: var(--text-subtle) !important;
 }}
 
-.stMetric {{
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 0.8rem;
-    border: 1px solid var(--card-border);
+.streamlit-expanderHeader,
+[data-testid="stExpander"] details > summary {{
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    color: var(--text) !important;
+    font-weight: 500;
 }}
-.stMetric label {{ color: var(--text-secondary) !important; }}
-.stMetric [data-testid="stMetricValue"] {{ color: var(--text-primary) !important; }}
+[data-testid="stExpander"] details {{
+    border: none !important;
+}}
+
+div[data-testid="stAlert"] {{
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+}}
 
 .footer {{
     text-align: center;
-    color: var(--text-muted);
-    font-size: 0.8rem;
+    color: var(--text-subtle);
+    font-size: 0.75rem;
     margin-top: 3rem;
-    padding: 1rem 0;
-    border-top: 1px solid var(--footer-border);
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.02em;
+}}
+
+.stSpinner > div {{
+    border-color: var(--burgundy) transparent transparent transparent !important;
 }}
 
 @media (max-width: 768px) {{
-    .main-title {{ font-size: 2rem; }}
-    .upload-card {{ padding: 1.2rem; }}
-    .result-box {{ padding: 1.2rem; }}
+    .main-title {{ font-size: 1.5rem; }}
+    .upload-card {{ padding: 1rem; }}
+    .result-box {{ padding: 1rem; }}
+    .block-container {{ padding-left: 1rem !important; padding-right: 1rem !important; }}
 }}
 </style>
 """
@@ -538,24 +686,24 @@ def calculate_tension(text):
 
 def format_score(score):
     if score >= 30:
-        return f'<span class="badge-critical">🔴 КРИТИЧНО</span>'
+        return '<span class="badge-critical">КРИТИЧНО</span>'
     elif score >= 20:
-        return f'<span class="badge-high">🟠 ВЫСОКИЙ</span>'
+        return '<span class="badge-high">ВЫСОКИЙ</span>'
     elif score >= 10:
-        return f'<span class="badge-medium">🟡 СРЕДНИЙ</span>'
+        return '<span class="badge-medium">СРЕДНИЙ</span>'
     elif score >= 5:
-        return f'<span class="badge-low">🟢 НИЗКИЙ</span>'
+        return '<span class="badge-low">НИЗКИЙ</span>'
     return ""
 
 def format_tension_badge(score):
     if score >= 60:
-        return f'🔴 КРИТИЧЕСКИЙ'
+        return 'КРИТИЧЕСКИЙ'
     elif score >= 40:
-        return f'🟠 ВЫСОКИЙ'
+        return 'ВЫСОКИЙ'
     elif score >= 25:
-        return f'🟡 СРЕДНИЙ'
+        return 'СРЕДНИЙ'
     elif score >= 15:
-        return f'🟢 НИЗКИЙ'
+        return 'НИЗКИЙ'
     return ""
 
 # ==================== ЧТЕНИЕ ФАЙЛОВ ====================
@@ -617,28 +765,28 @@ def get_theme_incident(row):
 
 # ==================== ВКЛАДКА 1 ====================
 with tab1:
-    st.markdown("### 🗓️ Выберите сезон")
+    st.markdown("### Выберите сезон")
     season = st.radio("", ["❄️ Зима", "🌷 Весна", "☀️ Лето", "🍂 Осень"],
                       horizontal=True, label_visibility="collapsed", key="season_selector")
 
-    min_score1 = st.slider("🎯 Минимальный порог баллов:", min_value=5, max_value=50,
+    min_score1 = st.slider("Минимальный порог баллов:", min_value=5, max_value=50,
                            value=15, step=5, key="min_score_resonance")
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_incident")
 
-    analyze_clicked = st.button("🔍 Найти резонансные жалобы", type="primary", use_container_width=True, key="btn_resonance")
+    analyze_clicked = st.button("Найти резонансные жалобы", type="primary", use_container_width=True, key="btn_resonance")
 
     if analyze_clicked:
         if not file1 or not file2:
-            st.error("⚠️ Загрузите оба файла!")
+            st.error("Загрузите оба файла!")
         else:
-            with st.spinner(f"🔄 Анализируем жалобы для сезона {season}..."):
+            with st.spinner(f"Анализируем жалобы для сезона {season}..."):
                 try:
                     keywords = SEASON_KEYWORDS[season]
                     df1 = load_dobrodel(file1)
@@ -665,21 +813,21 @@ with tab1:
 
                     st.markdown('<div class="result-box">', unsafe_allow_html=True)
                     if not text_output:
-                        st.warning(f"⚠️ Резонансных жалоб для сезона «{season}» не найдено.")
+                        st.warning(f"Резонансных жалоб для сезона «{season}» не найдено.")
                     else:
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                            <span style="font-size: 2rem;">{season.split()[0]}</span>
-                            <h3 style="margin: 0; color: var(--text-primary);">Найдено <span style="color: var(--accent-blue);">{len(жалобы)}</span> резонансных ({season})</h3>
-                            <span style="margin-left: auto; background: var(--input-bg); padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: var(--text-muted);">порог: {min_score1} баллов</span>
+                            <span style="font-size: 1.75rem;">{season.split()[0]}</span>
+                            <h3 style="margin: 0; color: var(--text);">Найдено {len(жалобы)} резонансных ({season})</h3>
+                            <span style="margin-left: auto; background: var(--surface-alt); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);">порог: {min_score1} баллов</span>
                         </div>
                         """, unsafe_allow_html=True)
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
-                        st.download_button("📥 Скачать как .txt", data=text_output, file_name=f"резонанс_{season.split()[1].lower()}.txt", mime="text/plain")
+                        st.download_button("Скачать как .txt", data=text_output, file_name=f"резонанс_{season.split()[1].lower()}.txt", mime="text/plain")
                     st.markdown('</div>', unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"❌ Ошибка: {e}")
+                    st.error(f"Ошибка: {e}")
                     import traceback
                     st.text(traceback.format_exc())
 
@@ -687,33 +835,33 @@ with tab1:
 with tab2:
     st.markdown("### 🔥 Индекс социального напряжения")
     st.markdown("""
-    <div style="background: var(--card-bg); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--card-shadow); border: 1px solid var(--card-border);">
-        <p style="color: var(--text-secondary); margin: 0;">
-        Этот фильтр находит жалобы, которые сигналят о <b>системной проблеме</b>: 
+    <div style="background: var(--surface); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); margin: 0; font-size: 0.9rem;">
+        Этот фильтр находит жалобы, которые сигналят о системной проблеме: 
         повторяемость, бездействие властей, массовость, эмоциональная накаленность, 
         угрозы здоровью и угрозы обращения в прокуратуру / СМИ.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    min_score2 = st.slider("🎯 Минимальный порог баллов:", min_value=15, max_value=100,
+    min_score2 = st.slider("Минимальный порог баллов:", min_value=15, max_value=100,
                            value=30, step=5, key="min_score_tension")
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         tension_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         tension_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_incident")
 
-    tension_clicked = st.button("🔥 Рассчитать индекс напряжения", type="primary", use_container_width=True, key="btn_tension")
+    tension_clicked = st.button("Рассчитать индекс напряжения", type="primary", use_container_width=True, key="btn_tension")
 
     if tension_clicked:
         if not tension_file1 or not tension_file2:
-            st.error("⚠️ Загрузите оба файла!")
+            st.error("Загрузите оба файла!")
         else:
-            with st.spinner("🔄 Рассчитываем индекс..."):
+            with st.spinner("Рассчитываем индекс..."):
                 try:
                     df1 = load_dobrodel(tension_file1)
                     df2 = load_incident(tension_file2)
@@ -726,9 +874,9 @@ with tab2:
 
                     жалобы = []
                     for _, row in result1.iterrows():
-                        жалобы.append(f"{row.get('Индекс', 0)} баллов {format_tension_badge(row.get('Индекс', 0))} | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
+                        жалобы.append(f"{row.get('Индекс', 0)} баллов [{format_tension_badge(row.get('Индекс', 0))}] | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
                     for _, row in result2.iterrows():
-                        жалобы.append(f"{row.get('Индекс', 0)} баллов {format_tension_badge(row.get('Индекс', 0))} | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
+                        жалобы.append(f"{row.get('Индекс', 0)} баллов [{format_tension_badge(row.get('Индекс', 0))}] | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
 
                     def extract_score(text):
                         match = re.search(r'^(\d+)', text)
@@ -739,21 +887,21 @@ with tab2:
 
                     st.markdown('<div class="result-box">', unsafe_allow_html=True)
                     if not text_output:
-                        st.warning("⚠️ Жалоб с высоким индексом не найдено.")
+                        st.warning("Жалоб с высоким индексом не найдено.")
                     else:
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                            <span style="font-size: 2rem;">🔥</span>
-                            <h3 style="margin: 0; color: var(--text-primary);">Найдено <span style="color: var(--accent-burgundy);">{len(жалобы)}</span> жалоб с высоким напряжением</h3>
-                            <span style="margin-left: auto; background: var(--input-bg); padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: var(--text-muted);">порог: {min_score2}</span>
+                            <span style="font-size: 1.75rem;">🔥</span>
+                            <h3 style="margin: 0; color: var(--text);">Найдено {len(жалобы)} жалоб с высоким напряжением</h3>
+                            <span style="margin-left: auto; background: var(--surface-alt); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);">порог: {min_score2}</span>
                         </div>
                         """, unsafe_allow_html=True)
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
-                        st.download_button("📥 Скачать как .txt", data=text_output, file_name="индекс_напряжения.txt", mime="text/plain")
+                        st.download_button("Скачать как .txt", data=text_output, file_name="индекс_напряжения.txt", mime="text/plain")
                     st.markdown('</div>', unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"❌ Ошибка: {e}")
+                    st.error(f"Ошибка: {e}")
                     import traceback
                     st.text(traceback.format_exc())
 
@@ -761,12 +909,12 @@ with tab2:
 with tab3:
     st.markdown("### 🎯 Очаги напряжения")
     st.markdown("""
-    <div style="background: var(--card-bg); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--card-shadow); border: 1px solid var(--card-border);">
-        <p style="color: var(--text-secondary); margin: 0;">
-        Эта вкладка находит <b>критические очаги</b> — адреса, где зафиксировано много жалоб 
+    <div style="background: var(--surface); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); margin: 0; font-size: 0.9rem;">
+        Эта вкладка находит <b style="color: var(--text);">критические очаги</b> — адреса, где зафиксировано много жалоб 
         по разным темам. Очаг формируется по адресу, Добродел и Инцидент объединяются.
         </p>
-        <p style="color: var(--accent-burgundy); margin: 0.5rem 0 0 0;">
+        <p style="color: var(--burgundy); margin: 0.5rem 0 0 0; font-size: 0.85rem;">
         <b>Индекс критичности</b> = (кол-во жалоб × 1) + (средний индекс напряжения × 2) + (разнообразие тем × 5)
         </p>
     </div>
@@ -775,32 +923,32 @@ with tab3:
     col_set1, col_set2 = st.columns(2)
     with col_set1:
         min_complaints = st.slider(
-            "📊 Минимум жалоб на адрес:",
+            "Минимум жалоб на адрес:",
             min_value=3, max_value=50, value=10, step=1,
             key="min_complaints_hotspot"
         )
     with col_set2:
         min_index = st.slider(
-            "🎯 Минимальный индекс критичности:",
+            "Минимальный индекс критичности:",
             min_value=0, max_value=300, value=80, step=10,
             key="min_index_hotspot"
         )
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         hotspot_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         hotspot_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_incident")
 
-    hotspot_clicked = st.button("🎯 Найти очаги напряжения", type="primary", use_container_width=True, key="btn_hotspot")
+    hotspot_clicked = st.button("Найти очаги напряжения", type="primary", use_container_width=True, key="btn_hotspot")
 
     if hotspot_clicked:
         if not hotspot_file1 or not hotspot_file2:
-            st.error("⚠️ Загрузите оба файла!")
+            st.error("Загрузите оба файла!")
         else:
-            with st.spinner("🔄 Ищем очаги..."):
+            with st.spinner("Ищем очаги..."):
                 try:
                     df1_full = read_file(hotspot_file1)
                     df2_full = read_file(hotspot_file2)
@@ -815,7 +963,6 @@ with tab3:
                         "tension_categories": set()
                     })
 
-                    # ДОБРОДЕЛ
                     for idx, row in df1_full.iterrows():
                         address = get_address_dobrodel(row)
                         if not address:
@@ -852,7 +999,6 @@ with tab3:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = описание
 
-                    # ИНЦИДЕНТ
                     for idx, row in df2_full.iterrows():
                         address = get_address_incident(row)
                         if not address:
@@ -889,7 +1035,6 @@ with tab3:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = контент
 
-                    # ИНДЕКС КРИТИЧНОСТИ
                     for key, data in hotspots.items():
                         if data["count"] == 0:
                             data["critical_index"] = 0
@@ -902,7 +1047,6 @@ with tab3:
                         data["themes_count"] = themes_count
                         data["critical_index"] = round(data["count"] * 1 + avg_tension * 2 + themes_count * 5, 1)
 
-                    # ФИЛЬТР
                     filtered = {
                         k: v for k, v in hotspots.items()
                         if v["count"] >= min_complaints and v["critical_index"] >= min_index
@@ -911,24 +1055,24 @@ with tab3:
 
                     text_output = ""
                     if not sorted_hotspots:
-                        st.warning("⚠️ Очагов с такими параметрами не найдено. Попробуйте снизить пороги.")
+                        st.warning("Очагов с такими параметрами не найдено. Попробуйте снизить пороги.")
                     else:
-                        text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n" + "=" * 70 + "\n\n"
+                        text_output += "ОЧАГИ НАПРЯЖЕНИЯ\n" + "=" * 70 + "\n\n"
 
                         for i, (key, data) in enumerate(sorted_hotspots, 1):
                             ci = data["critical_index"]
                             if ci >= 200:
-                                level_icon, level_name = "🔴", "КРИТИЧЕСКИЙ ОЧАГ"
+                                level = "[КРИТИЧЕСКИЙ ОЧАГ]"
                             elif ci >= 120:
-                                level_icon, level_name = "🟠", "ОЧЕНЬ ВЫСОКИЙ"
+                                level = "[ОЧЕНЬ ВЫСОКИЙ]"
                             elif ci >= 80:
-                                level_icon, level_name = "🟡", "ВЫСОКИЙ"
+                                level = "[ВЫСОКИЙ]"
                             elif ci >= 40:
-                                level_icon, level_name = "🟢", "СРЕДНИЙ"
+                                level = "[СРЕДНИЙ]"
                             else:
-                                level_icon, level_name = "⚪", "НИЗКИЙ"
+                                level = "[НИЗКИЙ]"
 
-                            text_output += f"{level_icon} {level_name} №{i}\n"
+                            text_output += f"{level} №{i}\n"
                             text_output += f"   Индекс критичности: {data['critical_index']}\n"
                             text_output += f"   Адрес: {data['address']}\n"
                             text_output += f"   ОМСУ: {data['omсу']}\n"
@@ -937,7 +1081,7 @@ with tab3:
                             text_output += f"   Разнообразие тем: {data['themes_count']}\n\n"
 
                             if data["themes"]:
-                                text_output += f"   📂 Темы очага (по Факт / Группа тем I):\n"
+                                text_output += f"   Темы очага (по Факт / Группа тем I):\n"
                                 for theme, count in sorted(data["themes"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {theme}: {count}\n"
                                 text_output += "\n"
@@ -948,16 +1092,16 @@ with tab3:
                             if data["incident_numbers"]:
                                 all_numbers.extend(data["incident_numbers"])
                             if all_numbers:
-                                text_output += f"   📞 Номера жалоб: {', '.join(all_numbers)}\n"
+                                text_output += f"   Номера жалоб: {', '.join(all_numbers)}\n"
 
                             if data["emails"]:
-                                text_output += f"   📧 Почта заявителей:\n"
+                                text_output += f"   Почта заявителей:\n"
                                 for email, count in sorted(data["emails"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {email} - {count} жалоб\n"
                             else:
-                                text_output += f"   📧 Почта заявителей: Не указана\n"
+                                text_output += f"   Почта заявителей: Не указана\n"
 
-                            text_output += f"\n   📝 Самое резонансное: {data['best_description'][:300]}\n"
+                            text_output += f"\n   Самое резонансное: {data['best_description'][:300]}\n"
                             text_output += "-" * 70 + "\n\n"
 
                         st.markdown('<div class="result-box">', unsafe_allow_html=True)
@@ -966,25 +1110,25 @@ with tab3:
                         medium = sum(1 for _, d in sorted_hotspots if 80 <= d["critical_index"] < 120)
 
                         st.markdown(f"""
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                            <span style="font-size: 2rem;">🎯</span>
-                            <h3 style="margin: 0; color: var(--text-primary);">Найдено <span style="color: var(--accent-burgundy);">{len(sorted_hotspots)}</span> очагов напряжения</h3>
-                            <span style="margin-left: auto; background: var(--input-bg); padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: var(--text-muted);">🔽 по индексу критичности</span>
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.75rem;">🎯</span>
+                            <h3 style="margin: 0; color: var(--text);">Найдено {len(sorted_hotspots)} очагов напряжения</h3>
+                            <span style="margin-left: auto; background: var(--surface-alt); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);">по индексу критичности</span>
                         </div>
-                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                            <span style="background: #a32638; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🔴 Критических: {critical}</span>
-                            <span style="background: #d4776b; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟠 Очень высоких: {high}</span>
-                            <span style="background: var(--accent-blue); color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟡 Высоких: {medium}</span>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                            <span style="background: var(--danger); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Критических: {critical}</span>
+                            <span style="background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Очень высоких: {high}</span>
+                            <span style="background: var(--blue); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Высоких: {medium}</span>
                         </div>
                         """, unsafe_allow_html=True)
 
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
-                        st.download_button("📥 Скачать как .txt", data=text_output, file_name="очаги_напряжения.txt", mime="text/plain")
+                        st.download_button("Скачать как .txt", data=text_output, file_name="очаги_напряжения.txt", mime="text/plain")
                         st.markdown('</div>', unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"❌ Ошибка: {e}")
+                    st.error(f"Ошибка: {e}")
                     import traceback
                     st.text(traceback.format_exc())
 
-st.markdown('<div class="footer">🏡 Резонансный фильтр • Автоматический отбор опасных жалоб по дворовой территории</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">Резонансный фильтр • Автоматический отбор опасных жалоб по дворовой территории</div>', unsafe_allow_html=True)
