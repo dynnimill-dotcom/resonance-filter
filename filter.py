@@ -26,37 +26,41 @@ with col_head2:
 # ==================== CSS С ТЕМАМИ ====================
 def get_theme_variables():
     light_vars = """
-        --bg: #fafafa;
+        --bg: #faf8f5;
+        --bg-elev: #ffffff;
         --surface: #ffffff;
-        --surface-alt: #f4f4f5;
-        --border: #e4e4e7;
-        --border-strong: #d4d4d8;
-        --text: #18181b;
-        --text-muted: #52525b;
-        --text-subtle: #a1a1aa;
+        --surface-2: #f5f1eb;
+        --border: #ebe4da;
+        --border-strong: #d9d0c3;
+        --text: #1c1917;
+        --text-2: #57534e;
+        --text-3: #a8a29e;
         --brand: #7a1f2b;
-        --primary: #2563eb;
-        --primary-hover: #1d4ed8;
-        --primary-soft: #eff6ff;
-        --danger: #dc2626;
-        --warning: #ea580c;
-        --ok: #16a34a;
+        --brand-soft: #fbeff0;
+        --accent: #1e5fa8;
+        --accent-hover: #16497f;
+        --accent-soft: #eaf1f9;
+        --danger: #b91c1c;
+        --warning: #b45309;
+        --ok: #15803d;
     """
     dark_vars = """
-        --bg: #0f0f11;
-        --surface: #18181b;
-        --surface-alt: #1f1f23;
-        --border: #27272a;
-        --border-strong: #3f3f46;
-        --text: #fafafa;
-        --text-muted: #a1a1aa;
-        --text-subtle: #71717a;
-        --brand: #c97a87;
-        --primary: #60a5fa;
-        --primary-hover: #93c5fd;
-        --primary-soft: #1e293b;
+        --bg: #14110f;
+        --bg-elev: #1c1917;
+        --surface: #1c1917;
+        --surface-2: #262220;
+        --border: #2d2825;
+        --border-strong: #3d3733;
+        --text: #f5f2ee;
+        --text-2: #c7bfb7;
+        --text-3: #857c74;
+        --brand: #d18a96;
+        --brand-soft: #2a1a1d;
+        --accent: #7fb0e0;
+        --accent-hover: #a4c8ec;
+        --accent-soft: #17263a;
         --danger: #ef4444;
-        --warning: #f97316;
+        --warning: #f59e0b;
         --ok: #22c55e;
     """
 
@@ -87,71 +91,93 @@ html, body, [class*="css"] {{
 }}
 
 .block-container {{
-    padding-top: 1.5rem !important;
+    padding-top: 1.75rem !important;
     padding-bottom: 3rem !important;
-    max-width: 1200px;
+    max-width: 1180px;
 }}
 
+/* ==================== ЗАГОЛОВКИ ==================== */
 .main-title {{
-    font-size: 1.9rem;
+    font-size: 1.85rem;
     font-weight: 700;
     color: var(--text);
-    letter-spacing: -0.03em;
-    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.035em;
+    margin: 0 0 0.4rem 0;
     padding: 0;
 }}
 
 .sub-title {{
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    font-size: 0.88rem;
+    color: var(--text-2);
     margin: 0 0 2rem 0;
-    padding: 0 0 0 12px;
+    padding: 0 0 0 14px;
     font-weight: 400;
-    border-left: 3px solid var(--brand);
+    border-left: 2px solid var(--brand);
+    line-height: 1.5;
 }}
 
+/* Overline-заголовки */
+h4 {{
+    color: var(--text) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+    opacity: 0.7;
+}}
+
+h3 {{
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.02em !important;
+    font-size: 1.15rem !important;
+}}
+
+/* ==================== ЗАГРУЗКА КАРТОЧЕК ==================== */
 .upload-card {{
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--border);
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
     margin-bottom: 0.5rem;
+    transition: border-color 0.2s ease;
+}}
+.upload-card:hover {{
+    border-left-color: var(--brand);
 }}
 .upload-card h3 {{
     color: var(--text);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    margin: 0 0 0.2rem 0;
+    margin: 0 0 0.15rem 0;
+    letter-spacing: -0.005em;
 }}
 .upload-card p {{
-    color: var(--text-subtle);
-    font-size: 0.78rem;
+    color: var(--text-3);
+    font-size: 0.76rem;
     margin: 0;
 }}
 
+/* ==================== РЕЗУЛЬТАТ ==================== */
 .result-box {{
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 1.5rem;
     margin-top: 1.5rem;
 }}
 .result-box h3 {{
     color: var(--text);
     font-weight: 600;
+    font-size: 1.1rem !important;
 }}
 
-h1, h2, h3, h4 {{
-    color: var(--text) !important;
-    font-weight: 600 !important;
-    letter-spacing: -0.02em !important;
-}}
-p, span, label, li, div {{ color: var(--text); }}
-.stMarkdown p {{ color: var(--text) !important; }}
-
-/* ============ ВКЛАДКИ ============ */
+/* ==================== ВКЛАДКИ ==================== */
 .stTabs [data-baseweb="tab-list"] {{
-    gap: 4px;
+    gap: 6px;
     background: transparent;
     border-bottom: 1px solid var(--border);
     padding-bottom: 0;
@@ -159,95 +185,106 @@ p, span, label, li, div {{ color: var(--text); }}
 }}
 .stTabs [data-baseweb="tab"] {{
     background: transparent;
-    border-radius: 0;
-    padding: 0.65rem 1.1rem;
-    color: var(--text-muted);
+    border-radius: 6px 6px 0 0;
+    padding: 0.6rem 1rem;
+    color: var(--text-2);
     border: none;
     border-bottom: 2px solid transparent;
     font-weight: 500;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     margin-bottom: -1px;
+    transition: all 0.15s ease;
 }}
-.stTabs [data-baseweb="tab"]:hover {{ color: var(--text); }}
+.stTabs [data-baseweb="tab"]:hover {{
+    color: var(--text);
+    background: var(--surface-2);
+}}
 .stTabs [aria-selected="true"] {{
-    background: transparent !important;
-    color: var(--primary) !important;
-    border-bottom: 2px solid var(--primary) !important;
+    background: var(--brand-soft) !important;
+    color: var(--brand) !important;
+    border-bottom: 2px solid var(--brand) !important;
     font-weight: 600 !important;
 }}
 
-/* ============ КНОПКИ ============ */
+/* ==================== КНОПКИ ==================== */
 .stButton > button {{
-    background: var(--primary);
+    background: var(--accent);
     color: #ffffff;
-    border: 1px solid var(--primary);
-    border-radius: 8px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
     font-weight: 500;
-    font-size: 0.88rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.86rem;
+    padding: 0.5rem 1.1rem;
     transition: background 0.15s ease;
     box-shadow: none;
+    letter-spacing: -0.005em;
 }}
 .stButton > button:hover {{
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
     color: #ffffff;
 }}
 .stButton > button:focus {{
-    box-shadow: 0 0 0 3px var(--primary-soft) !important;
+    box-shadow: 0 0 0 3px var(--accent-soft) !important;
 }}
 .stButton > button[kind="primary"] {{
-    background: var(--primary);
-    border-color: var(--primary);
+    background: var(--accent);
+    border-color: var(--accent);
     color: #ffffff;
 }}
 .stButton > button[kind="primary"]:hover {{
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
 }}
 .stButton > button[kind="secondary"] {{
     background: var(--surface);
     color: var(--text);
     border: 1px solid var(--border-strong);
+    font-weight: 500;
 }}
 .stButton > button[kind="secondary"]:hover {{
-    background: var(--surface-alt);
-    border-color: var(--primary);
-    color: var(--primary);
+    background: var(--surface-2);
+    border-color: var(--brand);
+    color: var(--brand);
 }}
 
-/* ============ DOWNLOAD ============ */
+/* ==================== DOWNLOAD ==================== */
 .stDownloadButton > button {{
-    background: var(--surface);
-    color: var(--primary);
-    border: 1px solid var(--primary);
-    border-radius: 8px;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
     font-weight: 500;
-    font-size: 0.88rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.86rem;
+    padding: 0.5rem 1.1rem;
+    transition: all 0.15s ease;
 }}
 .stDownloadButton > button:hover {{
-    background: var(--primary);
+    background: var(--accent);
     color: #ffffff;
 }}
 
-/* ============ СЛАЙДЕР ============ */
+/* ==================== СЛАЙДЕР ==================== */
 .stSlider [data-baseweb="slider"] > div > div > div {{
-    background: var(--primary) !important;
+    background: var(--accent) !important;
 }}
 .stSlider [data-baseweb="slider"] div[role="slider"] {{
-    background: var(--primary) !important;
-    border: 2px solid var(--primary) !important;
-    box-shadow: none !important;
+    background: var(--bg) !important;
+    border: 2px solid var(--accent) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
 }}
 .stSlider [data-testid="stTickBar"] {{ background: transparent !important; }}
 .stSlider [data-testid="stTickBarMin"],
-.stSlider [data-testid="stTickBarMax"] {{ color: var(--text-subtle) !important; }}
+.stSlider [data-testid="stTickBarMax"] {{
+    color: var(--text-3) !important;
+    font-size: 0.75rem !important;
+}}
 .stSlider [data-testid="stSliderThumbValue"] {{
     color: var(--text) !important;
+    font-weight: 600 !important;
 }}
 
-/* ============ RADIO (СЕЗОНЫ) ============ */
+/* ==================== RADIO (СЕЗОНЫ) ==================== */
 .stRadio > div {{
     gap: 8px;
     flex-wrap: wrap;
@@ -256,109 +293,114 @@ p, span, label, li, div {{ color: var(--text); }}
 .stRadio > div > label {{
     background: var(--surface);
     padding: 0.45rem 1rem;
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid var(--border);
-    color: var(--text-muted);
+    color: var(--text-2);
     transition: all 0.15s ease;
     font-weight: 500;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
+    margin: 0 !important;
 }}
 .stRadio > div > label:hover {{
-    border-color: var(--primary);
+    border-color: var(--brand);
     color: var(--text);
 }}
 .stRadio > div > label:has(input:checked) {{
-    background: var(--primary-soft);
-    border-color: var(--primary);
-    color: var(--primary);
+    background: var(--brand-soft);
+    border-color: var(--brand);
+    color: var(--brand);
+    font-weight: 600;
 }}
 .stRadio > div > label:has(input:checked) * {{
-    color: var(--primary) !important;
+    color: var(--brand) !important;
 }}
-/* Прячем стандартную радиокнопку */
 .stRadio > div > label > div:first-child {{
     display: none !important;
 }}
 
-/* ============ SELECT ============ */
+/* ==================== SELECT ==================== */
 .stSelectbox > div > div, .stMultiSelect > div > div {{
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     color: var(--text) !important;
 }}
 .stSelectbox > div > div:hover, .stMultiSelect > div > div:hover {{
-    border-color: var(--primary) !important;
+    border-color: var(--accent) !important;
 }}
 
-/* ============ TEXTAREA ============ */
+/* ==================== TEXTAREA ==================== */
 .stTextArea textarea {{
-    background: var(--surface) !important;
+    background: var(--surface-2) !important;
     color: var(--text) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
-    font-size: 0.85rem !important;
+    border-radius: 6px !important;
+    font-size: 0.82rem !important;
     font-family: "SF Mono", "JetBrains Mono", "Consolas", monospace !important;
-    line-height: 1.55 !important;
+    line-height: 1.6 !important;
     padding: 1rem !important;
+    letter-spacing: -0.005em;
 }}
 .stTextArea textarea:focus {{
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px var(--primary-soft) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px var(--accent-soft) !important;
 }}
 
-/* ============ FILE UPLOADER ============ */
+/* ==================== FILE UPLOADER ==================== */
 .stFileUploader > div {{
     background: var(--surface) !important;
     border: 1px dashed var(--border-strong) !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     transition: border-color 0.15s ease;
 }}
 .stFileUploader > div:hover {{
-    border-color: var(--primary) !important;
+    border-color: var(--accent) !important;
+    background: var(--accent-soft) !important;
 }}
 .stFileUploader label {{
     color: var(--text) !important;
     font-size: 0.82rem !important;
 }}
-.stFileUploader small {{ color: var(--text-subtle) !important; }}
+.stFileUploader small {{ color: var(--text-3) !important; }}
 
-/* ============ EXPANDER ============ */
+/* ==================== EXPANDER ==================== */
 .streamlit-expanderHeader,
 [data-testid="stExpander"] details > summary {{
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     color: var(--text) !important;
     font-weight: 500;
+    font-size: 0.86rem;
 }}
 [data-testid="stExpander"] details {{ border: none !important; }}
 
-/* ============ ALERTS ============ */
+/* ==================== ALERTS ==================== */
 div[data-testid="stAlert"] {{
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid var(--border);
     background: var(--surface);
 }}
 
-/* ============ SPINNER ============ */
+/* ==================== SPINNER ==================== */
 .stSpinner > div {{
-    border-color: var(--primary) transparent transparent transparent !important;
+    border-color: var(--accent) transparent transparent transparent !important;
 }}
 
-/* ============ FOOTER ============ */
+/* ==================== FOOTER ==================== */
 .footer {{
     text-align: center;
-    color: var(--text-subtle);
+    color: var(--text-3);
     font-size: 0.72rem;
     margin-top: 3rem;
     padding: 1.5rem 0;
     border-top: 1px solid var(--border);
+    letter-spacing: 0.02em;
 }}
 
 @media (max-width: 768px) {{
     .main-title {{ font-size: 1.5rem; }}
-    .upload-card {{ padding: 0.9rem; }}
+    .upload-card {{ padding: 0.75rem; }}
     .result-box {{ padding: 1rem; }}
     .block-container {{ padding-left: 1rem !important; padding-right: 1rem !important; }}
 }}
@@ -367,14 +409,14 @@ div[data-testid="stAlert"] {{
 
 st.markdown(theme_css, unsafe_allow_html=True)
 
-st.markdown('<h1 class="main-title">Резонансный фильтр</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">🏡 Резонансный фильтр</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">Автоматический отбор самых опасных жалоб по дворовой территории</p>', unsafe_allow_html=True)
 
 # ==================== ВКЛАДКИ ====================
 tab1, tab2, tab3 = st.tabs([
-    "Резонансные жалобы",
-    "Индекс социального напряжения",
-    "Очаги напряжения"
+    "📋 Резонансные жалобы",
+    "🔥 Индекс социального напряжения",
+    "🎯 Очаги напряжения"
 ])
 
 # ==================== СЛОВАРИ СЕЗОНОВ ====================
@@ -704,17 +746,17 @@ with tab1:
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_incident")
 
-    analyze_clicked = st.button("Найти резонансные жалобы", type="primary", use_container_width=True, key="btn_resonance")
+    analyze_clicked = st.button("🔍 Найти резонансные жалобы", type="primary", use_container_width=True, key="btn_resonance")
 
     if analyze_clicked:
         if not file1 and not file2:
-            st.error("Загрузите хотя бы один файл!")
+            st.error("⚠️ Загрузите хотя бы один файл!")
         else:
             with st.spinner(f"Анализируем жалобы для сезона {season}..."):
                 try:
@@ -744,26 +786,28 @@ with tab1:
 
                     st.markdown('<div class="result-box">', unsafe_allow_html=True)
                     if not text_output:
-                        st.warning(f"Резонансных жалоб для сезона «{season}» не найдено.")
+                        st.warning(f"⚠️ Резонансных жалоб для сезона «{season}» не найдено.")
                     else:
-                        st.markdown(f"### Найдено {len(жалобы)} резонансных жалоб ({season}) — порог: {min_score1} баллов")
+                        st.markdown(f"### 🎯 Найдено {len(жалобы)} резонансных жалоб ({season})")
+                        st.caption(f"Порог: {min_score1} баллов")
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
-                        st.download_button("Скачать как .txt", data=text_output, file_name=f"резонанс_{season.split()[1].lower()}.txt", mime="text/plain")
+                        st.download_button("📥 Скачать как .txt", data=text_output, file_name=f"резонанс_{season.split()[1].lower()}.txt", mime="text/plain")
                     st.markdown('</div>', unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"Ошибка: {e}")
+                    st.error(f"❌ Ошибка: {e}")
                     import traceback
                     st.text(traceback.format_exc())
 
 # ==================== ВКЛАДКА 2 ====================
 with tab2:
-    st.markdown("#### Индекс социального напряжения")
+    st.markdown("#### 🔥 Индекс социального напряжения")
     st.markdown("""
-    <div style="background: var(--surface); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border);">
-        <p style="color: var(--text-muted); margin: 0; font-size: 0.85rem;">
-        Находит жалобы, которые сигналят о системной проблеме: повторяемость, бездействие властей, 
-        массовость, эмоциональная накаленность, угрозы здоровью и обращения в прокуратуру / СМИ.
+    <div style="background: var(--surface); border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border); border-left: 3px solid var(--brand);">
+        <p style="color: var(--text-2); margin: 0; font-size: 0.85rem; line-height: 1.55;">
+        Находит жалобы, которые сигналят о <b style="color: var(--text);">системной проблеме</b>: 
+        повторяемость, бездействие властей, массовость, эмоциональная накаленность, 
+        угрозы здоровью и обращения в прокуратуру / СМИ.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -773,17 +817,17 @@ with tab2:
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         tension_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         tension_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_incident")
 
-    tension_clicked = st.button("Рассчитать индекс напряжения", type="primary", use_container_width=True, key="btn_tension")
+    tension_clicked = st.button("🔥 Рассчитать индекс напряжения", type="primary", use_container_width=True, key="btn_tension")
 
     if tension_clicked:
         if not tension_file1 and not tension_file2:
-            st.error("Загрузите хотя бы один файл!")
+            st.error("⚠️ Загрузите хотя бы один файл!")
         else:
             with st.spinner("Рассчитываем индекс..."):
                 try:
@@ -812,29 +856,30 @@ with tab2:
 
                     st.markdown('<div class="result-box">', unsafe_allow_html=True)
                     if not text_output:
-                        st.warning("Жалоб с высоким индексом не найдено.")
+                        st.warning("⚠️ Жалоб с высоким индексом не найдено.")
                     else:
-                        st.markdown(f"### Найдено {len(жалобы)} жалоб с высоким напряжением — порог: {min_score2}")
+                        st.markdown(f"### 🔥 Найдено {len(жалобы)} жалоб с высоким напряжением")
+                        st.caption(f"Порог: {min_score2} баллов")
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
-                        st.download_button("Скачать как .txt", data=text_output, file_name="индекс_напряжения.txt", mime="text/plain")
+                        st.download_button("📥 Скачать как .txt", data=text_output, file_name="индекс_напряжения.txt", mime="text/plain")
                     st.markdown('</div>', unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"Ошибка: {e}")
+                    st.error(f"❌ Ошибка: {e}")
                     import traceback
                     st.text(traceback.format_exc())
 
 # ==================== ВКЛАДКА 3 ====================
 with tab3:
-    st.markdown("#### Очаги напряжения")
+    st.markdown("#### 🎯 Очаги напряжения")
     st.markdown("""
-    <div style="background: var(--surface); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border);">
-        <p style="color: var(--text-muted); margin: 0; font-size: 0.85rem;">
+    <div style="background: var(--surface); border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border); border-left: 3px solid var(--brand);">
+        <p style="color: var(--text-2); margin: 0; font-size: 0.85rem; line-height: 1.55;">
         Находит <b style="color: var(--text);">критические очаги</b> — адреса, где зафиксировано много жалоб 
         по разным темам. Добродел и Инцидент объединяются в один кластер.
         </p>
-        <p style="color: var(--primary); margin: 0.5rem 0 0 0; font-size: 0.82rem;">
-        <b>Индекс критичности</b> = (кол-во жалоб × 1) + (средний индекс напряжения × 2) + (разнообразие тем × 5)
+        <p style="color: var(--brand); margin: 0.6rem 0 0 0; font-size: 0.82rem; font-family: 'SF Mono', 'Consolas', monospace;">
+        Индекс критичности = жалобы×1 + напряжение×2 + темы×5
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -847,17 +892,17 @@ with tab3:
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
-        st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>📄 Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         hotspot_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>📄 Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         hotspot_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_incident")
 
-    hotspot_clicked = st.button("Найти очаги напряжения", type="primary", use_container_width=True, key="btn_hotspot")
+    hotspot_clicked = st.button("🎯 Найти очаги напряжения", type="primary", use_container_width=True, key="btn_hotspot")
 
     if hotspot_clicked:
         if not hotspot_file1 and not hotspot_file2:
-            st.error("Загрузите хотя бы один файл!")
+            st.error("⚠️ Загрузите хотя бы один файл!")
         else:
             with st.spinner("Ищем очаги..."):
                 try:
@@ -950,22 +995,22 @@ with tab3:
 
                     text_output = ""
                     if not sorted_hotspots:
-                        st.warning("Очагов с такими параметрами не найдено. Попробуйте снизить пороги.")
+                        st.warning("⚠️ Очагов с такими параметрами не найдено. Попробуйте снизить пороги.")
                     else:
-                        text_output += "ОЧАГИ НАПРЯЖЕНИЯ\n" + "=" * 70 + "\n\n"
+                        text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n" + "=" * 70 + "\n\n"
 
                         for i, (key, data) in enumerate(sorted_hotspots, 1):
                             ci = data["critical_index"]
                             if ci >= 200:
-                                level = "[КРИТИЧЕСКИЙ ОЧАГ]"
+                                level = "🔴 [КРИТИЧЕСКИЙ ОЧАГ]"
                             elif ci >= 120:
-                                level = "[ОЧЕНЬ ВЫСОКИЙ]"
+                                level = "🟠 [ОЧЕНЬ ВЫСОКИЙ]"
                             elif ci >= 80:
-                                level = "[ВЫСОКИЙ]"
+                                level = "🟡 [ВЫСОКИЙ]"
                             elif ci >= 40:
-                                level = "[СРЕДНИЙ]"
+                                level = "🟢 [СРЕДНИЙ]"
                             else:
-                                level = "[НИЗКИЙ]"
+                                level = "⚪ [НИЗКИЙ]"
 
                             text_output += f"{level} №{i}\n"
                             text_output += f"   Индекс критичности: {data['critical_index']}\n"
@@ -976,7 +1021,7 @@ with tab3:
                             text_output += f"   Разнообразие тем: {data['themes_count']}\n\n"
 
                             if data["themes"]:
-                                text_output += f"   Темы очага:\n"
+                                text_output += f"   📂 Темы очага:\n"
                                 for theme, count in sorted(data["themes"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {theme}: {count}\n"
                                 text_output += "\n"
@@ -987,16 +1032,16 @@ with tab3:
                             if data["incident_numbers"]:
                                 all_numbers.extend(data["incident_numbers"])
                             if all_numbers:
-                                text_output += f"   Номера жалоб: {', '.join(all_numbers)}\n"
+                                text_output += f"   📞 Номера жалоб: {', '.join(all_numbers)}\n"
 
                             if data["emails"]:
-                                text_output += f"   Почта заявителей:\n"
+                                text_output += f"   📧 Почта заявителей:\n"
                                 for email, count in sorted(data["emails"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {email} - {count} жалоб\n"
                             else:
-                                text_output += f"   Почта заявителей: Не указана\n"
+                                text_output += f"   📧 Почта заявителей: Не указана\n"
 
-                            text_output += f"\n   Самое резонансное: {data['best_description'][:300]}\n"
+                            text_output += f"\n   📝 Самое резонансное: {data['best_description'][:300]}\n"
                             text_output += "-" * 70 + "\n\n"
 
                         st.markdown('<div class="result-box">', unsafe_allow_html=True)
@@ -1004,22 +1049,22 @@ with tab3:
                         high = sum(1 for _, d in sorted_hotspots if 120 <= d["critical_index"] < 200)
                         medium = sum(1 for _, d in sorted_hotspots if 80 <= d["critical_index"] < 120)
 
-                        st.markdown(f"### Найдено {len(sorted_hotspots)} очагов напряжения")
+                        st.markdown(f"### 🎯 Найдено {len(sorted_hotspots)} очагов напряжения")
                         st.markdown(f"""
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                            <span style="background: var(--danger); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Критических: {critical}</span>
-                            <span style="background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Очень высоких: {high}</span>
-                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Высоких: {medium}</span>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                            <span style="background: var(--danger); color: white; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 500;">🔴 Критических: {critical}</span>
+                            <span style="background: var(--warning); color: white; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 500;">🟠 Очень высоких: {high}</span>
+                            <span style="background: var(--accent); color: white; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 500;">🟡 Высоких: {medium}</span>
                         </div>
                         """, unsafe_allow_html=True)
 
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
-                        st.download_button("Скачать как .txt", data=text_output, file_name="очаги_напряжения.txt", mime="text/plain")
+                        st.download_button("📥 Скачать как .txt", data=text_output, file_name="очаги_напряжения.txt", mime="text/plain")
                         st.markdown('</div>', unsafe_allow_html=True)
 
                 except Exception as e:
-                    st.error(f"Ошибка: {e}")
+                    st.error(f"❌ Ошибка: {e}")
                     import traceback
                     st.text(traceback.format_exc())
 
-st.markdown('<div class="footer">Резонансный фильтр • Автоматический отбор опасных жалоб по дворовой территории</div>', unsafe_allow_html=True)
+st.markdown('<div class="footer">🏡 Резонансный фильтр • Автоматический отбор опасных жалоб по дворовой территории</div>', unsafe_allow_html=True)
