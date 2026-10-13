@@ -11,20 +11,14 @@ if "theme" not in st.session_state:
     st.session_state.theme = "auto"
 
 # ==================== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ====================
-theme_col1, theme_col2 = st.columns([10, 1])
-with theme_col2:
-    theme_icons = {"auto": "🌓", "light": "☀️", "dark": "🌙"}
-    theme_titles = {
-        "auto": "Тема: Авто (по системной)",
-        "light": "Тема: Светлая",
-        "dark": "Тема: Тёмная"
+col_head1, col_head2 = st.columns([5, 1])
+with col_head2:
+    theme_labels = {
+        "auto": "🌓 Авто",
+        "light": "☀️ Светлая",
+        "dark": "🌙 Тёмная"
     }
-    if st.button(
-        theme_icons[st.session_state.theme],
-        help=theme_titles[st.session_state.theme] + " — нажмите, чтобы переключить",
-        key="theme_toggle",
-        use_container_width=True
-    ):
+    if st.button(theme_labels[st.session_state.theme], key="theme_toggle", use_container_width=True):
         cycle = {"auto": "light", "light": "dark", "dark": "auto"}
         st.session_state.theme = cycle[st.session_state.theme]
         st.rerun()
@@ -40,13 +34,13 @@ def get_theme_variables():
         --text: #18181b;
         --text-muted: #52525b;
         --text-subtle: #a1a1aa;
-        --burgundy: #7a1f2b;
-        --burgundy-hover: #5c1420;
-        --blue: #1e5fa8;
-        --blue-hover: #164a83;
-        --danger: #b91c1c;
-        --warning: #c2410c;
-        --ok: #15803d;
+        --brand: #7a1f2b;
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --primary-soft: #eff6ff;
+        --danger: #dc2626;
+        --warning: #ea580c;
+        --ok: #16a34a;
     """
     dark_vars = """
         --bg: #0f0f11;
@@ -57,10 +51,10 @@ def get_theme_variables():
         --text: #fafafa;
         --text-muted: #a1a1aa;
         --text-subtle: #71717a;
-        --burgundy: #b8505f;
-        --burgundy-hover: #d16473;
-        --blue: #5b9bd5;
-        --blue-hover: #77aede;
+        --brand: #c97a87;
+        --primary: #60a5fa;
+        --primary-hover: #93c5fd;
+        --primary-soft: #1e293b;
         --danger: #ef4444;
         --warning: #f97316;
         --ok: #22c55e;
@@ -93,112 +87,58 @@ html, body, [class*="css"] {{
 }}
 
 .block-container {{
-    padding-top: 2rem !important;
+    padding-top: 1.5rem !important;
     padding-bottom: 3rem !important;
     max-width: 1200px;
 }}
 
 .main-title {{
-    font-size: 2rem;
+    font-size: 1.9rem;
     font-weight: 700;
     color: var(--text);
     letter-spacing: -0.03em;
-    margin: 0 0 0.25rem 0;
+    margin: 0 0 0.5rem 0;
     padding: 0;
-    text-align: left;
 }}
 
 .sub-title {{
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-muted);
     margin: 0 0 2rem 0;
     padding: 0 0 0 12px;
     font-weight: 400;
-    text-align: left;
-    border-left: 3px solid var(--burgundy);
+    border-left: 3px solid var(--brand);
 }}
 
 .upload-card {{
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    transition: border-color 0.15s ease;
-    height: 100%;
-}}
-.upload-card:hover {{
-    border-color: var(--border-strong);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.5rem;
 }}
 .upload-card h3 {{
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    margin: 0 0 0.25rem 0;
-    letter-spacing: -0.01em;
+    margin: 0 0 0.2rem 0;
 }}
 .upload-card p {{
     color: var(--text-subtle);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     margin: 0;
-    font-weight: 400;
 }}
 
 .result-box {{
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 1.5rem;
     margin-top: 1.5rem;
 }}
 .result-box h3 {{
     color: var(--text);
     font-weight: 600;
-    letter-spacing: -0.01em;
-}}
-
-.badge-critical {{
-    background: var(--danger);
-    color: #fff;
-    padding: 0.125rem 0.625rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    display: inline-block;
-}}
-.badge-high {{
-    background: var(--warning);
-    color: #fff;
-    padding: 0.125rem 0.625rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    display: inline-block;
-}}
-.badge-medium {{
-    background: var(--blue);
-    color: #fff;
-    padding: 0.125rem 0.625rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    display: inline-block;
-}}
-.badge-low {{
-    background: var(--ok);
-    color: #fff;
-    padding: 0.125rem 0.625rem;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    display: inline-block;
 }}
 
 h1, h2, h3, h4 {{
@@ -206,13 +146,10 @@ h1, h2, h3, h4 {{
     font-weight: 600 !important;
     letter-spacing: -0.02em !important;
 }}
-p, span, label, li, div {{
-    color: var(--text);
-}}
-.stMarkdown p {{
-    color: var(--text) !important;
-}}
+p, span, label, li, div {{ color: var(--text); }}
+.stMarkdown p {{ color: var(--text) !important; }}
 
+/* ============ ВКЛАДКИ ============ */
 .stTabs [data-baseweb="tab-list"] {{
     gap: 4px;
     background: transparent;
@@ -223,99 +160,127 @@ p, span, label, li, div {{
 .stTabs [data-baseweb="tab"] {{
     background: transparent;
     border-radius: 0;
-    padding: 0.75rem 1.25rem;
+    padding: 0.65rem 1.1rem;
     color: var(--text-muted);
     border: none;
     border-bottom: 2px solid transparent;
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     margin-bottom: -1px;
 }}
-.stTabs [data-baseweb="tab"]:hover {{
-    color: var(--text);
-}}
+.stTabs [data-baseweb="tab"]:hover {{ color: var(--text); }}
 .stTabs [aria-selected="true"] {{
     background: transparent !important;
-    color: var(--burgundy) !important;
-    border-bottom: 2px solid var(--burgundy) !important;
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary) !important;
     font-weight: 600 !important;
 }}
 
+/* ============ КНОПКИ ============ */
 .stButton > button {{
-    background: var(--burgundy);
-    color: #fff;
-    border: 1px solid var(--burgundy);
+    background: var(--primary);
+    color: #ffffff;
+    border: 1px solid var(--primary);
     border-radius: 8px;
     font-weight: 500;
-    font-size: 0.9rem;
-    padding: 0.5rem 1.25rem;
+    font-size: 0.88rem;
+    padding: 0.5rem 1rem;
     transition: background 0.15s ease;
     box-shadow: none;
 }}
 .stButton > button:hover {{
-    background: var(--burgundy-hover);
-    border-color: var(--burgundy-hover);
-    color: #fff;
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: #ffffff;
 }}
 .stButton > button:focus {{
-    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.15) !important;
+    box-shadow: 0 0 0 3px var(--primary-soft) !important;
 }}
 .stButton > button[kind="primary"] {{
-    background: var(--burgundy);
-    border-color: var(--burgundy);
-    color: #fff;
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
 }}
 .stButton > button[kind="primary"]:hover {{
-    background: var(--burgundy-hover);
-    border-color: var(--burgundy-hover);
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
 }}
 .stButton > button[kind="secondary"] {{
-    background: transparent;
+    background: var(--surface);
     color: var(--text);
     border: 1px solid var(--border-strong);
-    padding: 0.35rem 0.5rem !important;
-    font-size: 1.1rem !important;
-    min-width: unset !important;
-    border-radius: 8px;
 }}
 .stButton > button[kind="secondary"]:hover {{
     background: var(--surface-alt);
-    border-color: var(--border-strong);
-    color: var(--text);
+    border-color: var(--primary);
+    color: var(--primary);
 }}
 
+/* ============ DOWNLOAD ============ */
 .stDownloadButton > button {{
-    background: var(--blue);
-    color: #fff;
-    border: 1px solid var(--blue);
+    background: var(--surface);
+    color: var(--primary);
+    border: 1px solid var(--primary);
     border-radius: 8px;
     font-weight: 500;
-    font-size: 0.9rem;
-    padding: 0.5rem 1.25rem;
-    box-shadow: none;
+    font-size: 0.88rem;
+    padding: 0.5rem 1rem;
 }}
 .stDownloadButton > button:hover {{
-    background: var(--blue-hover);
-    border-color: var(--blue-hover);
-    color: #fff;
+    background: var(--primary);
+    color: #ffffff;
 }}
 
+/* ============ СЛАЙДЕР ============ */
 .stSlider [data-baseweb="slider"] > div > div > div {{
-    background: var(--burgundy) !important;
+    background: var(--primary) !important;
 }}
 .stSlider [data-baseweb="slider"] div[role="slider"] {{
-    background: var(--burgundy) !important;
-    border: 2px solid var(--burgundy) !important;
+    background: var(--primary) !important;
+    border: 2px solid var(--primary) !important;
     box-shadow: none !important;
 }}
-.stSlider [data-testid="stTickBar"] {{
-    background: transparent !important;
-}}
+.stSlider [data-testid="stTickBar"] {{ background: transparent !important; }}
 .stSlider [data-testid="stTickBarMin"],
-.stSlider [data-testid="stTickBarMax"] {{
-    color: var(--text-subtle) !important;
+.stSlider [data-testid="stTickBarMax"] {{ color: var(--text-subtle) !important; }}
+.stSlider [data-testid="stSliderThumbValue"] {{
+    color: var(--text) !important;
 }}
 
+/* ============ RADIO (СЕЗОНЫ) ============ */
+.stRadio > div {{
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-direction: row !important;
+}}
+.stRadio > div > label {{
+    background: var(--surface);
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.15s ease;
+    font-weight: 500;
+    font-size: 0.88rem;
+}}
+.stRadio > div > label:hover {{
+    border-color: var(--primary);
+    color: var(--text);
+}}
+.stRadio > div > label:has(input:checked) {{
+    background: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary);
+}}
+.stRadio > div > label:has(input:checked) * {{
+    color: var(--primary) !important;
+}}
+/* Прячем стандартную радиокнопку */
+.stRadio > div > label > div:first-child {{
+    display: none !important;
+}}
+
+/* ============ SELECT ============ */
 .stSelectbox > div > div, .stMultiSelect > div > div {{
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
@@ -323,101 +288,77 @@ p, span, label, li, div {{
     color: var(--text) !important;
 }}
 .stSelectbox > div > div:hover, .stMultiSelect > div > div:hover {{
-    border-color: var(--border-strong) !important;
+    border-color: var(--primary) !important;
 }}
 
-.stRadio > div {{
-    gap: 8px;
-    flex-wrap: wrap;
-}}
-.stRadio > div > label {{
-    background: var(--surface);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    transition: all 0.15s ease;
-    font-weight: 500;
-    font-size: 0.9rem;
-}}
-.stRadio > div > label:hover {{
-    border-color: var(--border-strong);
-    color: var(--text);
-}}
-.stRadio > div > label[data-checked="true"],
-.stRadio > div > label:has(input:checked) {{
-    background: var(--burgundy);
-    border-color: var(--burgundy);
-    color: #fff;
-}}
-
+/* ============ TEXTAREA ============ */
 .stTextArea textarea {{
     background: var(--surface) !important;
     color: var(--text) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     font-size: 0.85rem !important;
     font-family: "SF Mono", "JetBrains Mono", "Consolas", monospace !important;
-    line-height: 1.6 !important;
+    line-height: 1.55 !important;
     padding: 1rem !important;
 }}
 .stTextArea textarea:focus {{
-    border-color: var(--burgundy) !important;
-    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.1) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-soft) !important;
 }}
 
+/* ============ FILE UPLOADER ============ */
 .stFileUploader > div {{
     background: var(--surface) !important;
     border: 1px dashed var(--border-strong) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     transition: border-color 0.15s ease;
 }}
 .stFileUploader > div:hover {{
-    border-color: var(--burgundy) !important;
+    border-color: var(--primary) !important;
 }}
 .stFileUploader label {{
     color: var(--text) !important;
-    font-size: 0.85rem !important;
+    font-size: 0.82rem !important;
 }}
-.stFileUploader small {{
-    color: var(--text-subtle) !important;
-}}
+.stFileUploader small {{ color: var(--text-subtle) !important; }}
 
+/* ============ EXPANDER ============ */
 .streamlit-expanderHeader,
 [data-testid="stExpander"] details > summary {{
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     color: var(--text) !important;
     font-weight: 500;
 }}
-[data-testid="stExpander"] details {{
-    border: none !important;
-}}
+[data-testid="stExpander"] details {{ border: none !important; }}
 
+/* ============ ALERTS ============ */
 div[data-testid="stAlert"] {{
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--surface);
 }}
 
+/* ============ SPINNER ============ */
+.stSpinner > div {{
+    border-color: var(--primary) transparent transparent transparent !important;
+}}
+
+/* ============ FOOTER ============ */
 .footer {{
     text-align: center;
     color: var(--text-subtle);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     margin-top: 3rem;
     padding: 1.5rem 0;
     border-top: 1px solid var(--border);
-    letter-spacing: 0.02em;
-}}
-
-.stSpinner > div {{
-    border-color: var(--burgundy) transparent transparent transparent !important;
 }}
 
 @media (max-width: 768px) {{
     .main-title {{ font-size: 1.5rem; }}
-    .upload-card {{ padding: 1rem; }}
+    .upload-card {{ padding: 0.9rem; }}
     .result-box {{ padding: 1rem; }}
     .block-container {{ padding-left: 1rem !important; padding-right: 1rem !important; }}
 }}
@@ -426,14 +367,14 @@ div[data-testid="stAlert"] {{
 
 st.markdown(theme_css, unsafe_allow_html=True)
 
-st.markdown('<h1 class="main-title">🏡 Резонансный фильтр</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">Резонансный фильтр</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">Автоматический отбор самых опасных жалоб по дворовой территории</p>', unsafe_allow_html=True)
 
 # ==================== ВКЛАДКИ ====================
 tab1, tab2, tab3 = st.tabs([
-    "📋 Резонансные жалобы",
-    "🔥 Индекс социального напряжения",
-    "🎯 Очаги напряжения"
+    "Резонансные жалобы",
+    "Индекс социального напряжения",
+    "Очаги напряжения"
 ])
 
 # ==================== СЛОВАРИ СЕЗОНОВ ====================
@@ -684,17 +625,6 @@ def calculate_tension(text):
                 break
     return total
 
-def format_score(score):
-    if score >= 30:
-        return '<span class="badge-critical">КРИТИЧНО</span>'
-    elif score >= 20:
-        return '<span class="badge-high">ВЫСОКИЙ</span>'
-    elif score >= 10:
-        return '<span class="badge-medium">СРЕДНИЙ</span>'
-    elif score >= 5:
-        return '<span class="badge-low">НИЗКИЙ</span>'
-    return ""
-
 def format_tension_badge(score):
     if score >= 60:
         return 'КРИТИЧЕСКИЙ'
@@ -765,7 +695,7 @@ def get_theme_incident(row):
 
 # ==================== ВКЛАДКА 1 ====================
 with tab1:
-    st.markdown("### Выберите сезон")
+    st.markdown("#### Выберите сезон")
     season = st.radio("", ["❄️ Зима", "🌷 Весна", "☀️ Лето", "🍂 Осень"],
                       horizontal=True, label_visibility="collapsed", key="season_selector")
 
@@ -777,32 +707,33 @@ with tab1:
         st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="uploader_incident")
 
     analyze_clicked = st.button("Найти резонансные жалобы", type="primary", use_container_width=True, key="btn_resonance")
 
     if analyze_clicked:
-        if not file1 or not file2:
-            st.error("Загрузите оба файла!")
+        if not file1 and not file2:
+            st.error("Загрузите хотя бы один файл!")
         else:
             with st.spinner(f"Анализируем жалобы для сезона {season}..."):
                 try:
                     keywords = SEASON_KEYWORDS[season]
-                    df1 = load_dobrodel(file1)
-                    df2 = load_incident(file2)
-
-                    df1["Баллы"] = df1["Описание"].fillna("").apply(lambda x: calculate_score(x, keywords))
-                    df2["Баллы"] = df2["Контент"].fillna("").apply(lambda x: calculate_score(x, keywords))
-
-                    result1 = df1[df1["Баллы"] >= min_score1].drop_duplicates().sort_values("Баллы", ascending=False)
-                    result2 = df2[df2["Баллы"] >= min_score1].drop_duplicates().sort_values("Баллы", ascending=False)
-
                     жалобы = []
-                    for _, row in result1.iterrows():
-                        жалобы.append(f"{row.get('Баллы', 0)} баллов {format_score(row.get('Баллы', 0))} | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
-                    for _, row in result2.iterrows():
-                        жалобы.append(f"{row.get('Баллы', 0)} баллов {format_score(row.get('Баллы', 0))} | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
+
+                    if file1:
+                        df1 = load_dobrodel(file1)
+                        df1["Баллы"] = df1["Описание"].fillna("").apply(lambda x: calculate_score(x, keywords))
+                        r1 = df1[df1["Баллы"] >= min_score1].drop_duplicates().sort_values("Баллы", ascending=False)
+                        for _, row in r1.iterrows():
+                            жалобы.append(f"{row.get('Баллы', 0)} баллов | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
+
+                    if file2:
+                        df2 = load_incident(file2)
+                        df2["Баллы"] = df2["Контент"].fillna("").apply(lambda x: calculate_score(x, keywords))
+                        r2 = df2[df2["Баллы"] >= min_score1].drop_duplicates().sort_values("Баллы", ascending=False)
+                        for _, row in r2.iterrows():
+                            жалобы.append(f"{row.get('Баллы', 0)} баллов | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
 
                     def extract_score(text):
                         match = re.search(r'^(\d+)', text)
@@ -815,13 +746,7 @@ with tab1:
                     if not text_output:
                         st.warning(f"Резонансных жалоб для сезона «{season}» не найдено.")
                     else:
-                        st.markdown(f"""
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                            <span style="font-size: 1.75rem;">{season.split()[0]}</span>
-                            <h3 style="margin: 0; color: var(--text);">Найдено {len(жалобы)} резонансных ({season})</h3>
-                            <span style="margin-left: auto; background: var(--surface-alt); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);">порог: {min_score1} баллов</span>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown(f"### Найдено {len(жалобы)} резонансных жалоб ({season}) — порог: {min_score1} баллов")
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
                         st.download_button("Скачать как .txt", data=text_output, file_name=f"резонанс_{season.split()[1].lower()}.txt", mime="text/plain")
                     st.markdown('</div>', unsafe_allow_html=True)
@@ -833,13 +758,12 @@ with tab1:
 
 # ==================== ВКЛАДКА 2 ====================
 with tab2:
-    st.markdown("### 🔥 Индекс социального напряжения")
+    st.markdown("#### Индекс социального напряжения")
     st.markdown("""
-    <div style="background: var(--surface); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid var(--border);">
-        <p style="color: var(--text-muted); margin: 0; font-size: 0.9rem;">
-        Этот фильтр находит жалобы, которые сигналят о системной проблеме: 
-        повторяемость, бездействие властей, массовость, эмоциональная накаленность, 
-        угрозы здоровью и угрозы обращения в прокуратуру / СМИ.
+    <div style="background: var(--surface); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); margin: 0; font-size: 0.85rem;">
+        Находит жалобы, которые сигналят о системной проблеме: повторяемость, бездействие властей, 
+        массовость, эмоциональная накаленность, угрозы здоровью и обращения в прокуратуру / СМИ.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -852,31 +776,32 @@ with tab2:
         st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         tension_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         tension_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="tension_incident")
 
     tension_clicked = st.button("Рассчитать индекс напряжения", type="primary", use_container_width=True, key="btn_tension")
 
     if tension_clicked:
-        if not tension_file1 or not tension_file2:
-            st.error("Загрузите оба файла!")
+        if not tension_file1 and not tension_file2:
+            st.error("Загрузите хотя бы один файл!")
         else:
             with st.spinner("Рассчитываем индекс..."):
                 try:
-                    df1 = load_dobrodel(tension_file1)
-                    df2 = load_incident(tension_file2)
-
-                    df1["Индекс"] = df1["Описание"].fillna("").apply(calculate_tension)
-                    df2["Индекс"] = df2["Контент"].fillna("").apply(calculate_tension)
-
-                    result1 = df1[df1["Индекс"] >= min_score2].drop_duplicates().sort_values("Индекс", ascending=False)
-                    result2 = df2[df2["Индекс"] >= min_score2].drop_duplicates().sort_values("Индекс", ascending=False)
-
                     жалобы = []
-                    for _, row in result1.iterrows():
-                        жалобы.append(f"{row.get('Индекс', 0)} баллов [{format_tension_badge(row.get('Индекс', 0))}] | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
-                    for _, row in result2.iterrows():
-                        жалобы.append(f"{row.get('Индекс', 0)} баллов [{format_tension_badge(row.get('Индекс', 0))}] | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
+
+                    if tension_file1:
+                        df1 = load_dobrodel(tension_file1)
+                        df1["Индекс"] = df1["Описание"].fillna("").apply(calculate_tension)
+                        r1 = df1[df1["Индекс"] >= min_score2].drop_duplicates().sort_values("Индекс", ascending=False)
+                        for _, row in r1.iterrows():
+                            жалобы.append(f"{row.get('Индекс', 0)} баллов [{format_tension_badge(row.get('Индекс', 0))}] | {row.get('Номер в источнике', '')} - {row.get('ОМСУ', '')} - {row.get('Описание', '')}")
+
+                    if tension_file2:
+                        df2 = load_incident(tension_file2)
+                        df2["Индекс"] = df2["Контент"].fillna("").apply(calculate_tension)
+                        r2 = df2[df2["Индекс"] >= min_score2].drop_duplicates().sort_values("Индекс", ascending=False)
+                        for _, row in r2.iterrows():
+                            жалобы.append(f"{row.get('Индекс', 0)} баллов [{format_tension_badge(row.get('Индекс', 0))}] | {row.get('Номер инцидента', '')} - {clean_location(row.get('Локация', ''))} - {row.get('Контент', '')} - {row.get('URL поста', '')}")
 
                     def extract_score(text):
                         match = re.search(r'^(\d+)', text)
@@ -889,13 +814,7 @@ with tab2:
                     if not text_output:
                         st.warning("Жалоб с высоким индексом не найдено.")
                     else:
-                        st.markdown(f"""
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                            <span style="font-size: 1.75rem;">🔥</span>
-                            <h3 style="margin: 0; color: var(--text);">Найдено {len(жалобы)} жалоб с высоким напряжением</h3>
-                            <span style="margin-left: auto; background: var(--surface-alt); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);">порог: {min_score2}</span>
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown(f"### Найдено {len(жалобы)} жалоб с высоким напряжением — порог: {min_score2}")
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
                         st.download_button("Скачать как .txt", data=text_output, file_name="индекс_напряжения.txt", mime="text/plain")
                     st.markdown('</div>', unsafe_allow_html=True)
@@ -907,14 +826,14 @@ with tab2:
 
 # ==================== ВКЛАДКА 3 ====================
 with tab3:
-    st.markdown("### 🎯 Очаги напряжения")
+    st.markdown("#### Очаги напряжения")
     st.markdown("""
-    <div style="background: var(--surface); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid var(--border);">
-        <p style="color: var(--text-muted); margin: 0; font-size: 0.9rem;">
-        Эта вкладка находит <b style="color: var(--text);">критические очаги</b> — адреса, где зафиксировано много жалоб 
-        по разным темам. Очаг формируется по адресу, Добродел и Инцидент объединяются.
+    <div style="background: var(--surface); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border);">
+        <p style="color: var(--text-muted); margin: 0; font-size: 0.85rem;">
+        Находит <b style="color: var(--text);">критические очаги</b> — адреса, где зафиксировано много жалоб 
+        по разным темам. Добродел и Инцидент объединяются в один кластер.
         </p>
-        <p style="color: var(--burgundy); margin: 0.5rem 0 0 0; font-size: 0.85rem;">
+        <p style="color: var(--primary); margin: 0.5rem 0 0 0; font-size: 0.82rem;">
         <b>Индекс критичности</b> = (кол-во жалоб × 1) + (средний индекс напряжения × 2) + (разнообразие тем × 5)
         </p>
     </div>
@@ -922,37 +841,26 @@ with tab3:
 
     col_set1, col_set2 = st.columns(2)
     with col_set1:
-        min_complaints = st.slider(
-            "Минимум жалоб на адрес:",
-            min_value=3, max_value=50, value=10, step=1,
-            key="min_complaints_hotspot"
-        )
+        min_complaints = st.slider("Минимум жалоб на адрес:", min_value=3, max_value=50, value=10, step=1, key="min_complaints_hotspot")
     with col_set2:
-        min_index = st.slider(
-            "Минимальный индекс критичности:",
-            min_value=0, max_value=300, value=80, step=10,
-            key="min_index_hotspot"
-        )
+        min_index = st.slider("Минимальный индекс критичности:", min_value=0, max_value=300, value=80, step=10, key="min_index_hotspot")
 
     col1, col2 = st.columns(2, gap="large")
     with col1:
         st.markdown('<div class="upload-card"><h3>Файл №1 (Добродел)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         hotspot_file1 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_dobrodel")
     with col2:
-        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент)</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-card"><h3>Файл №2 (Инцидент) — опционально</h3><p>Excel (.xlsx, .xls) или CSV (.csv)</p></div>', unsafe_allow_html=True)
         hotspot_file2 = st.file_uploader("", type=["xlsx", "xls", "csv"], label_visibility="collapsed", key="hotspot_incident")
 
     hotspot_clicked = st.button("Найти очаги напряжения", type="primary", use_container_width=True, key="btn_hotspot")
 
     if hotspot_clicked:
-        if not hotspot_file1 or not hotspot_file2:
-            st.error("Загрузите оба файла!")
+        if not hotspot_file1 and not hotspot_file2:
+            st.error("Загрузите хотя бы один файл!")
         else:
             with st.spinner("Ищем очаги..."):
                 try:
-                    df1_full = read_file(hotspot_file1)
-                    df2_full = read_file(hotspot_file2)
-
                     hotspots = defaultdict(lambda: {
                         "omсу": "", "address": "", "count": 0, "total_tension": 0,
                         "best_description": "", "best_score": -1,
@@ -960,80 +868,67 @@ with tab3:
                         "dobrodel_numbers": [], "incident_numbers": [],
                         "emails": defaultdict(int),
                         "themes": defaultdict(int),
-                        "tension_categories": set()
                     })
 
-                    for idx, row in df1_full.iterrows():
-                        address = get_address_dobrodel(row)
-                        if not address:
-                            continue
-                        norm_addr = normalize_address(address)
-                        key = norm_addr
-                        описание = str(row.get("Описание", "")) if pd.notna(row.get("Описание")) else ""
-                        факт = str(row.get("Факт", "")) if pd.notna(row.get("Факт")) else ""
-                        score = calculate_tension(описание)
-                        номер = str(row.get("Номер в источнике", "")).strip()
-                        почта = str(row.get("Почта заявителя", "")).strip() if pd.notna(row.get("Почта заявителя")) else ""
+                    if hotspot_file1:
+                        df1_full = read_file(hotspot_file1)
+                        for idx, row in df1_full.iterrows():
+                            address = get_address_dobrodel(row)
+                            if not address:
+                                continue
+                            key = normalize_address(address)
+                            описание = str(row.get("Описание", "")) if pd.notna(row.get("Описание")) else ""
+                            факт = str(row.get("Факт", "")) if pd.notna(row.get("Факт")) else ""
+                            score = calculate_tension(описание)
+                            номер = str(row.get("Номер в источнике", "")).strip()
+                            почта = str(row.get("Почта заявителя", "")).strip() if pd.notna(row.get("Почта заявителя")) else ""
 
-                        hotspots[key]["omсу"] = row.get("ОМСУ", "")
-                        hotspots[key]["address"] = address
-                        hotspots[key]["count"] += 1
-                        hotspots[key]["total_tension"] += score
-                        hotspots[key]["dobrodel_count"] += 1
-                        if номер:
-                            hotspots[key]["dobrodel_numbers"].append(номер)
-                        if почта and почта.lower() not in ["nan", "none", ""]:
-                            hotspots[key]["emails"][почта] += 1
-
-                        theme = categorize_theme(факт) if факт else categorize_theme(описание)
-                        hotspots[key]["themes"][theme] += 1
-
-                        if score > 0:
-                            for cat, data in TENSION_CATEGORIES.items():
-                                for w in data["words"]:
-                                    if w in описание.lower():
-                                        hotspots[key]["tension_categories"].add(cat)
-                                        break
-
-                        if score > hotspots[key]["best_score"]:
-                            hotspots[key]["best_score"] = score
-                            hotspots[key]["best_description"] = описание
-
-                    for idx, row in df2_full.iterrows():
-                        address = get_address_incident(row)
-                        if not address:
-                            continue
-                        norm_addr = normalize_address(address)
-                        key = norm_addr
-                        контент = str(row.get("Контент", "")) if pd.notna(row.get("Контент")) else ""
-                        группа_тем = str(row.get("Группа тем I", "")) if pd.notna(row.get("Группа тем I")) else ""
-                        score = calculate_tension(контент)
-                        номер = str(row.get("Номер инцидента", "")).strip()
-
-                        if not hotspots[key]["omсу"]:
-                            hotspots[key]["omсу"] = row.get("Локация", "")
-                        if not hotspots[key]["address"]:
+                            hotspots[key]["omсу"] = row.get("ОМСУ", "")
                             hotspots[key]["address"] = address
+                            hotspots[key]["count"] += 1
+                            hotspots[key]["total_tension"] += score
+                            hotspots[key]["dobrodel_count"] += 1
+                            if номер:
+                                hotspots[key]["dobrodel_numbers"].append(номер)
+                            if почта and почта.lower() not in ["nan", "none", ""]:
+                                hotspots[key]["emails"][почта] += 1
 
-                        hotspots[key]["count"] += 1
-                        hotspots[key]["total_tension"] += score
-                        hotspots[key]["incident_count"] += 1
-                        if номер:
-                            hotspots[key]["incident_numbers"].append(номер)
+                            theme = categorize_theme(факт) if факт else categorize_theme(описание)
+                            hotspots[key]["themes"][theme] += 1
 
-                        theme = categorize_theme(группа_тем) if группа_тем else categorize_theme(контент)
-                        hotspots[key]["themes"][theme] += 1
+                            if score > hotspots[key]["best_score"]:
+                                hotspots[key]["best_score"] = score
+                                hotspots[key]["best_description"] = описание
 
-                        if score > 0:
-                            for cat, data in TENSION_CATEGORIES.items():
-                                for w in data["words"]:
-                                    if w in контент.lower():
-                                        hotspots[key]["tension_categories"].add(cat)
-                                        break
+                    if hotspot_file2:
+                        df2_full = read_file(hotspot_file2)
+                        for idx, row in df2_full.iterrows():
+                            address = get_address_incident(row)
+                            if not address:
+                                continue
+                            key = normalize_address(address)
+                            контент = str(row.get("Контент", "")) if pd.notna(row.get("Контент")) else ""
+                            группа_тем = str(row.get("Группа тем I", "")) if pd.notna(row.get("Группа тем I")) else ""
+                            score = calculate_tension(контент)
+                            номер = str(row.get("Номер инцидента", "")).strip()
 
-                        if score > hotspots[key]["best_score"]:
-                            hotspots[key]["best_score"] = score
-                            hotspots[key]["best_description"] = контент
+                            if not hotspots[key]["omсу"]:
+                                hotspots[key]["omсу"] = row.get("Локация", "")
+                            if not hotspots[key]["address"]:
+                                hotspots[key]["address"] = address
+
+                            hotspots[key]["count"] += 1
+                            hotspots[key]["total_tension"] += score
+                            hotspots[key]["incident_count"] += 1
+                            if номер:
+                                hotspots[key]["incident_numbers"].append(номер)
+
+                            theme = categorize_theme(группа_тем) if группа_тем else categorize_theme(контент)
+                            hotspots[key]["themes"][theme] += 1
+
+                            if score > hotspots[key]["best_score"]:
+                                hotspots[key]["best_score"] = score
+                                hotspots[key]["best_description"] = контент
 
                     for key, data in hotspots.items():
                         if data["count"] == 0:
@@ -1081,7 +976,7 @@ with tab3:
                             text_output += f"   Разнообразие тем: {data['themes_count']}\n\n"
 
                             if data["themes"]:
-                                text_output += f"   Темы очага (по Факт / Группа тем I):\n"
+                                text_output += f"   Темы очага:\n"
                                 for theme, count in sorted(data["themes"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {theme}: {count}\n"
                                 text_output += "\n"
@@ -1109,16 +1004,12 @@ with tab3:
                         high = sum(1 for _, d in sorted_hotspots if 120 <= d["critical_index"] < 200)
                         medium = sum(1 for _, d in sorted_hotspots if 80 <= d["critical_index"] < 120)
 
+                        st.markdown(f"### Найдено {len(sorted_hotspots)} очагов напряжения")
                         st.markdown(f"""
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <span style="font-size: 1.75rem;">🎯</span>
-                            <h3 style="margin: 0; color: var(--text);">Найдено {len(sorted_hotspots)} очагов напряжения</h3>
-                            <span style="margin-left: auto; background: var(--surface-alt); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);">по индексу критичности</span>
-                        </div>
                         <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
                             <span style="background: var(--danger); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Критических: {critical}</span>
                             <span style="background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Очень высоких: {high}</span>
-                            <span style="background: var(--blue); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Высоких: {medium}</span>
+                            <span style="background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem;">Высоких: {medium}</span>
                         </div>
                         """, unsafe_allow_html=True)
 
