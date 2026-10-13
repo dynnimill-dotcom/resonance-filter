@@ -6,24 +6,277 @@ from collections import defaultdict
 
 st.set_page_config(page_title="Резонансный фильтр", page_icon="🏡", layout="wide", initial_sidebar_state="collapsed")
 
-st.markdown("""
+# ==================== ИНИЦИАЛИЗАЦИЯ ТЕМЫ ====================
+if "theme" not in st.session_state:
+    st.session_state.theme = "auto"
+
+# ==================== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ====================
+theme_col1, theme_col2 = st.columns([10, 1])
+with theme_col2:
+    theme_icons = {"auto": "🌓", "light": "☀️", "dark": "🌙"}
+    theme_titles = {
+        "auto": "Тема: Авто (по системной)",
+        "light": "Тема: Светлая",
+        "dark": "Тема: Тёмная"
+    }
+    if st.button(
+        theme_icons[st.session_state.theme],
+        help=theme_titles[st.session_state.theme] + " — нажмите, чтобы переключить",
+        key="theme_toggle",
+        use_container_width=True
+    ):
+        cycle = {"auto": "light", "light": "dark", "dark": "auto"}
+        st.session_state.theme = cycle[st.session_state.theme]
+        st.rerun()
+
+# ==================== CSS С ТЕМАМИ ====================
+def get_theme_variables():
+    light_vars = """
+        --bg-gradient-1: #f9f5f2;
+        --bg-gradient-2: #e8eef7;
+        --card-bg: #ffffff;
+        --card-border: rgba(128, 0, 32, 0.08);
+        --card-shadow: 0 10px 40px rgba(128, 0, 32, 0.08);
+        --card-shadow-hover: 0 15px 50px rgba(128, 0, 32, 0.15);
+        --text-primary: #2b1a20;
+        --text-secondary: #6e5a63;
+        --text-muted: #a89aa0;
+        --accent-burgundy: #800020;
+        --accent-burgundy-dark: #5c0a1a;
+        --accent-blue: #2e86de;
+        --accent-blue-light: #5dade2;
+        --footer-border: #e8dfe3;
+        --input-bg: #ffffff;
+        --input-border: #e0d5da;
+        --input-text: #2b1a20;
+    """
+    dark_vars = """
+        --bg-gradient-1: #1a0e14;
+        --bg-gradient-2: #0f1419;
+        --card-bg: #1f1418;
+        --card-border: rgba(168, 50, 80, 0.15);
+        --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        --card-shadow-hover: 0 15px 50px rgba(168, 50, 80, 0.25);
+        --text-primary: #f0e6ea;
+        --text-secondary: #c4b3bb;
+        --text-muted: #8a7a82;
+        --accent-burgundy: #c45a75;
+        --accent-burgundy-dark: #a32638;
+        --accent-blue: #5dade2;
+        --accent-blue-light: #85c1e9;
+        --footer-border: #2f1f26;
+        --input-bg: #2a1d22;
+        --input-border: #3f2a33;
+        --input-text: #f0e6ea;
+    """
+
+    if st.session_state.theme == "light":
+        return f":root {{ {light_vars} }}"
+    elif st.session_state.theme == "dark":
+        return f":root {{ {dark_vars} }}"
+    else:
+        return f"""
+            :root {{ {light_vars} }}
+            @media (prefers-color-scheme: dark) {{
+                :root {{ {dark_vars} }}
+            }}
+        """
+
+theme_css = f"""
 <style>
-.stApp { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-.main-title { text-align: center; font-size: 2.8rem; font-weight: 800; background: linear-gradient(45deg, #2d3436, #0984e3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; padding: 1rem 0; }
-.sub-title { text-align: center; color: #636e72; font-size: 1.1rem; margin-bottom: 2rem; }
-.upload-card { background: white; border-radius: 20px; padding: 2rem 1.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease; height: 100%; }
-.upload-card:hover { transform: translateY(-5px); box-shadow: 0 15px 50px rgba(0,0,0,0.12); }
-.upload-card h3 { color: #2d3436; font-size: 1.1rem; margin-bottom: 0.5rem; }
-.upload-card p { color: #b2bec3; font-size: 0.9rem; }
-.result-box { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 40px rgba(0,0,0,0.08); margin-top: 2rem; }
-.footer { text-align: center; color: #b2bec3; font-size: 0.8rem; margin-top: 3rem; padding: 1rem 0; border-top: 1px solid #dfe6e9; }
-.badge-critical { background: #ff6b6b; color: white; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-.badge-high { background: #fdcb6e; color: #2d3436; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-.badge-medium { background: #74b9ff; color: white; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-.badge-low { background: #55efc4; color: #2d3436; padding: 0.2rem 0.8rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
-@media (max-width: 768px) { .main-title { font-size: 2rem; } }
+{get_theme_variables()}
+
+.stApp {{
+    background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+    color: var(--text-primary);
+}}
+
+.main-title {{
+    text-align: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, var(--accent-burgundy), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 1rem 0;
+    letter-spacing: -0.5px;
+}}
+.sub-title {{
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}}
+
+.upload-card {{
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+    height: 100%;
+}}
+.upload-card:hover {{
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--accent-burgundy);
+}}
+.upload-card h3 {{
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}}
+.upload-card p {{
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}}
+
+.result-box {{
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    margin-top: 2rem;
+    border: 1px solid var(--card-border);
+}}
+.result-box h3 {{ color: var(--text-primary); }}
+
+.badge-critical {{
+    background: linear-gradient(135deg, #a32638, #800020);
+    color: white; padding: 0.2rem 0.8rem; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 700; display: inline-block;
+}}
+.badge-high {{
+    background: linear-gradient(135deg, #d4776b, #a32638);
+    color: white; padding: 0.2rem 0.8rem; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 700; display: inline-block;
+}}
+.badge-medium {{
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-light));
+    color: white; padding: 0.2rem 0.8rem; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 700; display: inline-block;
+}}
+.badge-low {{
+    background: linear-gradient(135deg, #85c1e9, #d5e8f5);
+    color: #1a0e14; padding: 0.2rem 0.8rem; border-radius: 50px;
+    font-size: 0.75rem; font-weight: 700; display: inline-block;
+}}
+
+.stMarkdown, .stText, p, span, label, div {{ color: var(--text-primary); }}
+
+.stSlider > div > div > div > div {{ background: var(--accent-burgundy) !important; }}
+.stSlider [data-baseweb="slider"] div[role="slider"] {{
+    background: var(--accent-blue) !important;
+    border-color: var(--accent-burgundy) !important;
+}}
+
+.stSelectbox > div > div, .stMultiSelect > div > div {{
+    background: var(--input-bg) !important;
+    border-color: var(--input-border) !important;
+    color: var(--input-text) !important;
+}}
+
+.stButton > button {{
+    background: linear-gradient(135deg, var(--accent-burgundy), var(--accent-blue));
+    color: white; border: none; border-radius: 50px;
+    font-weight: 600; padding: 0.5rem 2rem;
+    transition: all 0.3s ease;
+}}
+.stButton > button:hover {{
+    background: linear-gradient(135deg, var(--accent-burgundy-dark), var(--accent-blue));
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(128, 0, 32, 0.3);
+}}
+
+.stButton > button[kind="secondary"] {{
+    padding: 0.4rem 0.6rem !important;
+    font-size: 1.2rem !important;
+    min-width: unset !important;
+}}
+
+.stDownloadButton > button {{
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-light));
+    color: white; border: none; border-radius: 50px; font-weight: 600;
+}}
+.stDownloadButton > button:hover {{
+    background: linear-gradient(135deg, var(--accent-blue-light), var(--accent-blue));
+}}
+
+.stTabs [data-baseweb="tab-list"] {{ gap: 8px; background: transparent; }}
+.stTabs [data-baseweb="tab"] {{
+    background: var(--card-bg);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--card-border);
+    font-weight: 600;
+}}
+.stTabs [aria-selected="true"] {{
+    background: linear-gradient(135deg, var(--accent-burgundy), var(--accent-blue)) !important;
+    color: white !important;
+    border: none !important;
+}}
+
+.stTextArea textarea {{
+    background: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-radius: 15px !important;
+    border: 1px solid var(--input-border) !important;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}}
+
+.stFileUploader > div {{
+    background: var(--card-bg) !important;
+    border-color: var(--input-border) !important;
+    border-radius: 15px !important;
+}}
+.stFileUploader label {{ color: var(--text-primary) !important; }}
+
+.stRadio > div > label {{
+    background: var(--card-bg);
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}}
+.stRadio > div > label:hover {{ border-color: var(--accent-burgundy); }}
+
+.streamlit-expanderHeader {{
+    background: var(--card-bg);
+    border-radius: 12px;
+    color: var(--text-primary);
+}}
+
+.stMetric {{
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 0.8rem;
+    border: 1px solid var(--card-border);
+}}
+.stMetric label {{ color: var(--text-secondary) !important; }}
+.stMetric [data-testid="stMetricValue"] {{ color: var(--text-primary) !important; }}
+
+.footer {{
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--footer-border);
+}}
+
+@media (max-width: 768px) {{
+    .main-title {{ font-size: 2rem; }}
+    .upload-card {{ padding: 1.2rem; }}
+    .result-box {{ padding: 1.2rem; }}
+}}
 </style>
-""", unsafe_allow_html=True)
+"""
+
+st.markdown(theme_css, unsafe_allow_html=True)
 
 st.markdown('<h1 class="main-title">🏡 Резонансный фильтр</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">Автоматический отбор самых опасных жалоб по дворовой территории</p>', unsafe_allow_html=True)
@@ -305,7 +558,7 @@ def format_tension_badge(score):
         return f'🟢 НИЗКИЙ'
     return ""
 
-# ==================== ЧТЕНИЕ ФАЙЛОВ (Excel + CSV) ====================
+# ==================== ЧТЕНИЕ ФАЙЛОВ ====================
 def read_file(file):
     file.seek(0)
     filename = file.name.lower()
@@ -417,8 +670,8 @@ with tab1:
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
                             <span style="font-size: 2rem;">{season.split()[0]}</span>
-                            <h3 style="margin: 0; color: #2d3436;">Найдено <span style="color: #0984e3;">{len(жалобы)}</span> резонансных ({season})</h3>
-                            <span style="margin-left: auto; background: #dfe6e9; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: #636e72;">порог: {min_score1} баллов</span>
+                            <h3 style="margin: 0; color: var(--text-primary);">Найдено <span style="color: var(--accent-blue);">{len(жалобы)}</span> резонансных ({season})</h3>
+                            <span style="margin-left: auto; background: var(--input-bg); padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: var(--text-muted);">порог: {min_score1} баллов</span>
                         </div>
                         """, unsafe_allow_html=True)
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
@@ -434,8 +687,8 @@ with tab1:
 with tab2:
     st.markdown("### 🔥 Индекс социального напряжения")
     st.markdown("""
-    <div style="background: white; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <p style="color: #636e72; margin: 0;">
+    <div style="background: var(--card-bg); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--card-shadow); border: 1px solid var(--card-border);">
+        <p style="color: var(--text-secondary); margin: 0;">
         Этот фильтр находит жалобы, которые сигналят о <b>системной проблеме</b>: 
         повторяемость, бездействие властей, массовость, эмоциональная накаленность, 
         угрозы здоровью и угрозы обращения в прокуратуру / СМИ.
@@ -491,8 +744,8 @@ with tab2:
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
                             <span style="font-size: 2rem;">🔥</span>
-                            <h3 style="margin: 0; color: #2d3436;">Найдено <span style="color: #e74c3c;">{len(жалобы)}</span> жалоб с высоким напряжением</h3>
-                            <span style="margin-left: auto; background: #dfe6e9; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: #636e72;">порог: {min_score2}</span>
+                            <h3 style="margin: 0; color: var(--text-primary);">Найдено <span style="color: var(--accent-burgundy);">{len(жалобы)}</span> жалоб с высоким напряжением</h3>
+                            <span style="margin-left: auto; background: var(--input-bg); padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: var(--text-muted);">порог: {min_score2}</span>
                         </div>
                         """, unsafe_allow_html=True)
                         st.text_area("", text_output, height=500, label_visibility="collapsed")
@@ -508,12 +761,12 @@ with tab2:
 with tab3:
     st.markdown("### 🎯 Очаги напряжения")
     st.markdown("""
-    <div style="background: white; border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <p style="color: #636e72; margin: 0;">
+    <div style="background: var(--card-bg); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--card-shadow); border: 1px solid var(--card-border);">
+        <p style="color: var(--text-secondary); margin: 0;">
         Эта вкладка находит <b>критические очаги</b> — адреса, где зафиксировано много жалоб 
         по разным темам. Очаг формируется по адресу, Добродел и Инцидент объединяются.
         </p>
-        <p style="color: #e74c3c; margin: 0.5rem 0 0 0;">
+        <p style="color: var(--accent-burgundy); margin: 0.5rem 0 0 0;">
         <b>Индекс критичности</b> = (кол-во жалоб × 1) + (средний индекс напряжения × 2) + (разнообразие тем × 5)
         </p>
     </div>
@@ -553,30 +806,22 @@ with tab3:
                     df2_full = read_file(hotspot_file2)
 
                     hotspots = defaultdict(lambda: {
-                        "omсу": "",
-                        "address": "",
-                        "count": 0,
-                        "total_tension": 0,
-                        "best_description": "",
-                        "best_score": -1,
-                        "dobrodel_count": 0,
-                        "incident_count": 0,
-                        "dobrodel_numbers": [],
-                        "incident_numbers": [],
+                        "omсу": "", "address": "", "count": 0, "total_tension": 0,
+                        "best_description": "", "best_score": -1,
+                        "dobrodel_count": 0, "incident_count": 0,
+                        "dobrodel_numbers": [], "incident_numbers": [],
                         "emails": defaultdict(int),
                         "themes": defaultdict(int),
                         "tension_categories": set()
                     })
 
-                    # ==================== ОБРАБОТКА ДОБРОДЕЛА ====================
+                    # ДОБРОДЕЛ
                     for idx, row in df1_full.iterrows():
                         address = get_address_dobrodel(row)
                         if not address:
                             continue
-
                         norm_addr = normalize_address(address)
                         key = norm_addr
-
                         описание = str(row.get("Описание", "")) if pd.notna(row.get("Описание")) else ""
                         факт = str(row.get("Факт", "")) if pd.notna(row.get("Факт")) else ""
                         score = calculate_tension(описание)
@@ -590,15 +835,12 @@ with tab3:
                         hotspots[key]["dobrodel_count"] += 1
                         if номер:
                             hotspots[key]["dobrodel_numbers"].append(номер)
-
                         if почта and почта.lower() not in ["nan", "none", ""]:
                             hotspots[key]["emails"][почта] += 1
 
-                        # Тематика: сначала пробуем Факт из Добродела
                         theme = categorize_theme(факт) if факт else categorize_theme(описание)
                         hotspots[key]["themes"][theme] += 1
 
-                        # Категория напряжения
                         if score > 0:
                             for cat, data in TENSION_CATEGORIES.items():
                                 for w in data["words"]:
@@ -610,15 +852,13 @@ with tab3:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = описание
 
-                    # ==================== ОБРАБОТКА ИНЦИДЕНТА ====================
+                    # ИНЦИДЕНТ
                     for idx, row in df2_full.iterrows():
                         address = get_address_incident(row)
                         if not address:
                             continue
-
                         norm_addr = normalize_address(address)
                         key = norm_addr
-
                         контент = str(row.get("Контент", "")) if pd.notna(row.get("Контент")) else ""
                         группа_тем = str(row.get("Группа тем I", "")) if pd.notna(row.get("Группа тем I")) else ""
                         score = calculate_tension(контент)
@@ -635,7 +875,6 @@ with tab3:
                         if номер:
                             hotspots[key]["incident_numbers"].append(номер)
 
-                        # Тематика: сначала пробуем Группа тем I из Инцидента
                         theme = categorize_theme(группа_тем) if группа_тем else categorize_theme(контент)
                         hotspots[key]["themes"][theme] += 1
 
@@ -650,54 +889,44 @@ with tab3:
                             hotspots[key]["best_score"] = score
                             hotspots[key]["best_description"] = контент
 
-                    # ==================== РАСЧЁТ ИНДЕКСА КРИТИЧНОСТИ ====================
+                    # ИНДЕКС КРИТИЧНОСТИ
                     for key, data in hotspots.items():
                         if data["count"] == 0:
                             data["critical_index"] = 0
                             data["avg_tension"] = 0
                             data["themes_count"] = 0
                             continue
-
                         avg_tension = data["total_tension"] / data["count"]
                         themes_count = len(data["themes"])
-                        critical_index = data["count"] * 1 + avg_tension * 2 + themes_count * 5
-
                         data["avg_tension"] = round(avg_tension, 1)
                         data["themes_count"] = themes_count
-                        data["critical_index"] = round(critical_index, 1)
+                        data["critical_index"] = round(data["count"] * 1 + avg_tension * 2 + themes_count * 5, 1)
 
-                    # ==================== ФИЛЬТР ====================
+                    # ФИЛЬТР
                     filtered = {
                         k: v for k, v in hotspots.items()
                         if v["count"] >= min_complaints and v["critical_index"] >= min_index
                     }
                     sorted_hotspots = sorted(filtered.items(), key=lambda x: x[1]["critical_index"], reverse=True)
 
-                    # ==================== ФОРМИРОВАНИЕ ВЫВОДА ====================
                     text_output = ""
                     if not sorted_hotspots:
                         st.warning("⚠️ Очагов с такими параметрами не найдено. Попробуйте снизить пороги.")
                     else:
-                        text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n"
-                        text_output += "=" * 70 + "\n\n"
+                        text_output += "🎯 ОЧАГИ НАПРЯЖЕНИЯ\n" + "=" * 70 + "\n\n"
 
                         for i, (key, data) in enumerate(sorted_hotspots, 1):
                             ci = data["critical_index"]
                             if ci >= 200:
-                                level_icon = "🔴"
-                                level_name = "КРИТИЧЕСКИЙ ОЧАГ"
+                                level_icon, level_name = "🔴", "КРИТИЧЕСКИЙ ОЧАГ"
                             elif ci >= 120:
-                                level_icon = "🟠"
-                                level_name = "ОЧЕНЬ ВЫСОКИЙ"
+                                level_icon, level_name = "🟠", "ОЧЕНЬ ВЫСОКИЙ"
                             elif ci >= 80:
-                                level_icon = "🟡"
-                                level_name = "ВЫСОКИЙ"
+                                level_icon, level_name = "🟡", "ВЫСОКИЙ"
                             elif ci >= 40:
-                                level_icon = "🟢"
-                                level_name = "СРЕДНИЙ"
+                                level_icon, level_name = "🟢", "СРЕДНИЙ"
                             else:
-                                level_icon = "⚪"
-                                level_name = "НИЗКИЙ"
+                                level_icon, level_name = "⚪", "НИЗКИЙ"
 
                             text_output += f"{level_icon} {level_name} №{i}\n"
                             text_output += f"   Индекс критичности: {data['critical_index']}\n"
@@ -709,8 +938,7 @@ with tab3:
 
                             if data["themes"]:
                                 text_output += f"   📂 Темы очага (по Факт / Группа тем I):\n"
-                                sorted_themes = sorted(data["themes"].items(), key=lambda x: x[1], reverse=True)
-                                for theme, count in sorted_themes:
+                                for theme, count in sorted(data["themes"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {theme}: {count}\n"
                                 text_output += "\n"
 
@@ -724,8 +952,7 @@ with tab3:
 
                             if data["emails"]:
                                 text_output += f"   📧 Почта заявителей:\n"
-                                sorted_emails = sorted(data["emails"].items(), key=lambda x: x[1], reverse=True)
-                                for email, count in sorted_emails:
+                                for email, count in sorted(data["emails"].items(), key=lambda x: x[1], reverse=True):
                                     text_output += f"      • {email} - {count} жалоб\n"
                             else:
                                 text_output += f"   📧 Почта заявителей: Не указана\n"
@@ -734,7 +961,6 @@ with tab3:
                             text_output += "-" * 70 + "\n\n"
 
                         st.markdown('<div class="result-box">', unsafe_allow_html=True)
-
                         critical = sum(1 for _, d in sorted_hotspots if d["critical_index"] >= 200)
                         high = sum(1 for _, d in sorted_hotspots if 120 <= d["critical_index"] < 200)
                         medium = sum(1 for _, d in sorted_hotspots if 80 <= d["critical_index"] < 120)
@@ -742,13 +968,13 @@ with tab3:
                         st.markdown(f"""
                         <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
                             <span style="font-size: 2rem;">🎯</span>
-                            <h3 style="margin: 0; color: #2d3436;">Найдено <span style="color: #e74c3c;">{len(sorted_hotspots)}</span> очагов напряжения</h3>
-                            <span style="margin-left: auto; background: #dfe6e9; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: #636e72;">🔽 по индексу критичности</span>
+                            <h3 style="margin: 0; color: var(--text-primary);">Найдено <span style="color: var(--accent-burgundy);">{len(sorted_hotspots)}</span> очагов напряжения</h3>
+                            <span style="margin-left: auto; background: var(--input-bg); padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem; color: var(--text-muted);">🔽 по индексу критичности</span>
                         </div>
                         <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                            <span style="background: #ff6b6b; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🔴 Критических: {critical}</span>
-                            <span style="background: #fdcb6e; color: #2d3436; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟠 Очень высоких: {high}</span>
-                            <span style="background: #74b9ff; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟡 Высоких: {medium}</span>
+                            <span style="background: #a32638; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🔴 Критических: {critical}</span>
+                            <span style="background: #d4776b; color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟠 Очень высоких: {high}</span>
+                            <span style="background: var(--accent-blue); color: white; padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.85rem;">🟡 Высоких: {medium}</span>
                         </div>
                         """, unsafe_allow_html=True)
 
